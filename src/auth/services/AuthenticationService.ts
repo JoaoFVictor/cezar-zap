@@ -2,37 +2,37 @@ import 'dotenv/config'
 
 import { sign, verify } from 'jsonwebtoken';
 
-import { Session } from '../models/Session';
-import { SessionRepository } from '../repositories/SessionRepository';
+import { User } from '../models/User';
+import { UserRepository } from '../repositories/UserRepository';
 
 export class AuthenticationService {
-    constructor(private sessionRepository: SessionRepository) {}
+    constructor(private userRepository: UserRepository) {}
 
-    findByPhoneNumber(phoneNumber: string): undefined | Session {
-        return this.sessionRepository.findByPhoneNumber(phoneNumber);
-    }
+    async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
+        return this.userRepository.findByPhoneNumber(phoneNumber);
+    }    
 
-    generateOtp(phoneNumber: string): string {
+    async generateOtp(phoneNumber: string): Promise<string> {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const session = new Session(phoneNumber, false, undefined, otp);
-        this.sessionRepository.create(session);
+        const user = new User(phoneNumber, false, undefined, otp);
+        await this.userRepository.createUser(user);
         return otp;
     }
 
-    authenticate(phoneNumber: string, otp: string): boolean {
-        const session = this.findByPhoneNumber(phoneNumber);
-        if (session && session.otp === otp) {
-            session.isAuthenticated = true;
-            session.otp = undefined;
+    async authenticate(phoneNumber: string, otp: string): Promise<boolean> {
+        const user = await this.findByPhoneNumber(phoneNumber);
+        if (user && user.otp === otp) {
+            user.is_authenticated = true;
+            user.otp = undefined;
 
             const payload = {
-                phoneNumber: session.phoneNumber,
+                phoneNumber: user.phone_number,
                 timestamp: new Date().getTime()
             };
 
             const token = sign(payload as object, process.env.JWT_SECRET_KEY!, { expiresIn: process.env.JWT_SECRET_TIME });
-
-            session.token = token;
+            user.token = token;
+            await this.userRepository.updateUser(user);
             return true;
         }
         return false;
@@ -40,21 +40,22 @@ export class AuthenticationService {
 
     isTokenValid(token: string): boolean {
         try {
-            const decoded = verify(token, process.env.JWT_SECRET_KEY!);
+            const decoded: any = verify(token, process.env.JWT_SECRET_KEY!);
             return !!decoded;
         } catch (err) {
             return false;
         }
     }
 
-    refreshToken(token: string): string | null {
+    async refreshToken(token: string): Promise<string | null> {
         if (this.isTokenValid(token)) {
             const decoded: any = verify(token, process.env.JWT_SECRET_KEY!);
             const newToken = sign(decoded as object, process.env.JWT_SECRET_KEY!, { expiresIn: process.env.JWT_SECRET_TIME });
 
-            const session = this.sessionRepository.findByPhoneNumber(decoded.phoneNumber);
-            if (session) {
-                session.token = newToken;
+            const user = await this.userRepository.findByPhoneNumber(decoded.phoneNumber);
+            if (user) {
+                user.token = newToken;
+                await this.userRepository.updateUser(user);
             }
             return newToken;
         }

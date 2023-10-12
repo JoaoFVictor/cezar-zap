@@ -1,23 +1,30 @@
 import { ActionService } from '../actions/services/ActionService';
 import { Menu } from '../menu/models/Menu';
-import { MenuFactory } from '../menu/models/factories/MenuFactory';
+import { MenuService } from '../menu/services/MenuService';
 
 export class MenuProcessor {
     private userMenuStates: Map<string, { currentMenu: Menu, menuStack: Menu[] }> = new Map();
     private actionService: ActionService;
+    private menuService: MenuService;
 
-    constructor(actionService: ActionService) {
+    constructor(actionService: ActionService, menuService: MenuService) {
         this.actionService = actionService;
+        this.menuService = menuService;
     }
 
-    processMenuCommand(userId: string, command: string): string | undefined {
+    async processMenuCommand(userId: string, command: string): Promise <string> {
         let response = '';
         let userState = this.userMenuStates.get(userId);
 
         if (!userState) {
-            const menuFactory = new MenuFactory(this.actionService);
+            const mainMenu = await this.menuService.getMainMenu();
+
+            if (!mainMenu) {
+                return 'Main menu not found in the database.';
+            }
+
             userState = {
-                currentMenu: menuFactory.generate(),
+                currentMenu: mainMenu,
                 menuStack: []
             };
             this.userMenuStates.set(userId, userState);
@@ -29,10 +36,10 @@ export class MenuProcessor {
                 response = this.goBack(userState);
                 break;
             case "RESTART":
-                response = this.restartMenu(userState);
+                response = await this.restartMenu(userState);
                 break;
             default:
-                response = this.processSelectedOption(userState, command);
+                response = await this.processSelectedOption(userState, command);
                 break;
         }
 
@@ -46,23 +53,22 @@ export class MenuProcessor {
         return this.displayMenu(userState.currentMenu);
     }
 
-    private restartMenu(userState: any): string {
-        const menuFactory = new MenuFactory(this.actionService);
-        userState.currentMenu = menuFactory.generate();
+    private async restartMenu(userState: any): Promise <string> {
+        userState.currentMenu = await this.menuService.getMainMenu();
         userState.menuStack = [];
         return this.displayMenu(userState.currentMenu);
     }
 
-    private processSelectedOption(userState: any, command: string): string {
+    private async processSelectedOption(userState: any, command: string): Promise <string> {
         userState.menuStack.push(userState.currentMenu);
-        const option = userState.currentMenu.children?.find((opt: Menu) => opt.option === command);
+        const option = await this.menuService.findByOptionAndParentMenuId(command, userState.currentMenu.id);
 
         if (!option) {
             return "Invalid option. Please select a valid one.";
         }
-
+        console.log(option);
         if (option.action) {
-            let response = this.actionService.executeActionById(option.action.id);
+            let response = await this.actionService.executeActionById(option.action.id);
             if (response) {
                 return response;
             }
@@ -75,12 +81,12 @@ export class MenuProcessor {
     }
 
     private displayMenu(menu: Menu): string {
-        let response = `${menu.title} - ${menu.description}\n`;
-        menu.children?.forEach(option => response += `${option.option}. ${option.title}\n`);
-        return response;
+        let response = `${menu.title}\n${menu.description}\n\n`;
+        menu.children?.forEach(option => response += `🔹 ${option.option}. ${option.title}\n`);
+        return response.trim();
     }
-
+    
     private getCommonActions(): string {
-        return "BACK. Go back to the previous menu\nRESTART. Start from the main menu";
-    }
+        return "\n\n🔙 Type 'BACK' to go to the previous menu.\n🔄 Type 'RESTART' to start from the main menu.";
+    }    
 }

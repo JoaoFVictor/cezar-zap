@@ -30,9 +30,9 @@ export class WhatsAppBot {
             console.log('Client está pronto para receber mensagens');
         });
 
-        this.client.on('message', message => {
+        this.client.on('message', async (message) => {
             console.log('Mensagem recebida de', message.from, message.body);
-            const response = this.messageProcessor.processMessage(message.from, message.body);
+            const response = await this.messageProcessor.processMessage(message.from, message.body);
             if (response) {
                 message.reply(response);
             }

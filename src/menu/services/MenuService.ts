@@ -4,11 +4,11 @@ import { MenuRepository } from '../repositories/MenuRepository';
 export class MenuService {
     constructor(private menuRepository: MenuRepository) {}
 
-    getMainMenu(): Menu | undefined {
-        return this.menuRepository.findById('main');
+    async getMainMenu(): Promise <Menu | null> {
+        return await this.menuRepository.findByOption('main');
     }
 
-    getMenuById(id: string): Menu | undefined {
-        return this.menuRepository.findById(id);
+    async findByOptionAndParentMenuId(option: string, id: string): Promise <Menu | null> {
+        return await this.menuRepository.findByOptionAndParentMenuId(option, id);
     }
 }

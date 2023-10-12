@@ -1,13 +1,14 @@
+import { DataSource, Repository } from 'typeorm';
+
 import { Action } from '../models/Action';
 
-export class ActionRepository {
-    private actions: Action[] = [];
-
-    create(action: Action): void {
-        this.actions.push(action);
+export class ActionRepository extends Repository<Action> {
+    constructor(private dataSource: DataSource)
+    {
+        super(Action, dataSource.createEntityManager());
     }
 
-    findById(id: string): Action | undefined {
-        return this.actions.find(action => action.id === id);
+    async findById(id: number): Promise <Action | null> {
+        return await this.findOneBy({id: id});
     }
 }

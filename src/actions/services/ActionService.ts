@@ -1,15 +1,19 @@
 import { Action } from '../models/Action';
+import { ActionFactory } from '../factory/ActionFactory';
 import { ActionRepository } from '../repositories/ActionRepository';
 
 export class ActionService {
-    constructor(private actionRepository: ActionRepository) {}
+    constructor(private actionRepository: ActionRepository, private actionFactory: ActionFactory) {}
 
-    executeActionById(id: string): string | undefined | void {
-        const action = this.actionRepository.findById(id);
-        return action?.execute();
+    async executeActionById(id: number): Promise <string | void> {
+        const actionData = await this.actionRepository.findById(id);
+        if (!actionData) return;
+        const actionInstance = this.actionFactory.createAction(actionData);
+
+        return actionInstance.execute();
     }
 
-    findById(id: string): Action | undefined {
-        return this.actionRepository.findById(id);
+    async findById(id: number): Promise <Action | null> {
+        return await this.actionRepository.findById(id);
     }
 }

@@ -6,6 +6,32 @@ services:
       context: .
     volumes:
       - .:/usr/src/app
+    networks:
+      - cezarzap
     environment:
       - NODE_ENV=development
     command: npm run dev
+    depends_on:
+      - postgres
+      - redis
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    restart: always
+    environment:
+      PGPASSWORD: 'postgres'
+      POSTGRES_DB: 'cezarzap'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+    networks:
+      - cezarzap
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+      - cezarzap
+networks:
+  cezarzap:
+    driver: bridge

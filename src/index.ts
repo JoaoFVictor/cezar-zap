@@ -1,25 +1,39 @@
-import { Action } from './actions/models/Action';
+import 'reflect-metadata';
+
+import { ActionFactory } from './actions/factory/ActionFactory';
 import { ActionRepository } from './actions/repositories/ActionRepository';
 import { ActionService } from './actions/services/ActionService';
+import { AppDataSource } from './data-source';
 import { AuthenticationService } from './auth/services/AuthenticationService';
+import { MenuRepository } from './menu/repositories/MenuRepository';
+import { MenuService } from './menu/services/MenuService';
 import { MessageProcessor } from './core/MessageProcessor';
-import { SessionRepository } from './auth/repositories/SessionRepository';
+import { UserRepository } from './auth/repositories/UserRepository';
 import { WhatsAppBot } from './core/Bot';
 
-const actionRepo = new ActionRepository();
-populateActionRepository(actionRepo);
-const actionService = new ActionService(actionRepo);
+(async function main() {
+    AppDataSource.initialize()
+    .then(() => {
+      console.log("Data Source has been initialized!");
+    })
+    .catch((err) => {
+      console.error("Error during Data Source initialization:", err);
+    });
+    
+    const actionRepository = new ActionRepository(AppDataSource);
+    const actionFactory = new ActionFactory();
+    const actionService = new ActionService(actionRepository, actionFactory);
+    
+    const userRepository = new UserRepository(AppDataSource);
+    const authService = new AuthenticationService(userRepository);
 
-const sessionRepo = new SessionRepository();
-const authService = new AuthenticationService(sessionRepo);
-
-const messageProcessor = new MessageProcessor(actionService, authService);
-
-const bot = new WhatsAppBot(messageProcessor);
-bot.initialize();
-
-function populateActionRepository(repo: ActionRepository) {
-    repo.create(new Action("SEND_REPORT", "Send a report", () => {
-        console.log('action foi');
-    }));
-}
+    const menuRepository = new MenuRepository(AppDataSource);
+    const menuService = new MenuService(menuRepository);
+    
+    const messageProcessor = new MessageProcessor(actionService, authService, menuService);
+    
+    const bot = new WhatsAppBot(messageProcessor);
+    bot.initialize();
+})().catch(error => {
+    console.error("Error initializing the app:", error);
+});
