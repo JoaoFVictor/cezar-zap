@@ -1,27 +1,31 @@
-import { ActionService } from '../actions/services/ActionService';
-import { AuthenticationService } from '../auth/services/AuthenticationService';
+import { AuthenticateUserUseCase } from '../use-cases/auth/AuthenticateUserUseCase';
+import { GenerateOtpUseCase } from '../use-cases/auth/GenerateOtpUseCase';
 import { MenuProcessor } from './MenuProcessor';
-import { MenuService } from '../menu/services/MenuService';
+import { RefreshTokenUseCase } from '../use-cases/auth/RefreshTokenUseCase';
+import { UserRepository } from '../infrastructure/repositories/UserRepository';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class MessageProcessor {
     constructor(
-        private actionService: ActionService,
-        private authService: AuthenticationService,
-        private menuService: MenuService
+        private userRepository: UserRepository,
+        private menuProcessor: MenuProcessor,
+        private generateOtpUseCase: GenerateOtpUseCase,
+        private authenticateUserUseCase: AuthenticateUserUseCase,
+        private refreshTokenUseCase: RefreshTokenUseCase,
     ) {}
-    private menuProcessor = new MenuProcessor(this.actionService, this.menuService);
 
     async processMessage(phoneNumber: string, messageText: string): Promise <string | undefined> {
-        const phoneRegister = await this.authService.findByPhoneNumber(phoneNumber);
+        const phoneRegister = await this.userRepository.findByPhoneNumber(phoneNumber);
         if (!phoneRegister) {
-            const otp = await this.authService.generateOtp(phoneNumber);
+            const otp = await this.generateOtpUseCase.execute(phoneNumber);
             return `Verifiquei que você não é cadastrado no sistema, seu código de autenticação é ${otp} \nEsse código poderá ser pedido para autenticar você no sistema.\nMe responda com o código de autenticação.`;
         }
 
-        const phoneSession = this.authService.isTokenValid(phoneRegister.token ?? '');
-        if (!phoneSession ) {
-            const phoneOTPValid = await this.authService.authenticate(phoneNumber, messageText);
-            if (!phoneOTPValid) {
+        const isTokenValid = phoneRegister.token ? this.refreshTokenUseCase.execute(phoneRegister.token) : false;
+        if (!isTokenValid) {
+            const { isAuthenticated } = await this.authenticateUserUseCase.execute(phoneNumber, messageText);
+            if (!isAuthenticated) {
                 return 'Você não está autenticado, informe seu codigo de autenticação.';
             }
         }

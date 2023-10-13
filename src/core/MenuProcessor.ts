@@ -1,14 +1,16 @@
-import { ActionService } from '../actions/services/ActionService';
-import { Menu } from '../menu/models/Menu';
-import { MenuService } from '../menu/services/MenuService';
+import { ExecuteAction } from '../use-cases/actions/ExecuteAction';
+import { Menu } from '../entities/Menu';
+import { MenuService } from '../infrastructure/services/MenuService';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class MenuProcessor {
     private userMenuStates: Map<string, { currentMenu: Menu, menuStack: Menu[] }> = new Map();
-    private actionService: ActionService;
+    private executeAction: ExecuteAction;
     private menuService: MenuService;
 
-    constructor(actionService: ActionService, menuService: MenuService) {
-        this.actionService = actionService;
+    constructor(executeAction: ExecuteAction, menuService: MenuService) {
+        this.executeAction = executeAction;
         this.menuService = menuService;
     }
 
@@ -66,9 +68,9 @@ export class MenuProcessor {
         if (!option) {
             return "Invalid option. Please select a valid one.";
         }
-        console.log(option);
+
         if (option.action) {
-            let response = await this.actionService.executeActionById(option.action.id);
+            let response = await this.executeAction.execute(option.action.id);
             if (response) {
                 return response;
             }

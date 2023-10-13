@@ -1,9 +1,11 @@
 import { DataSource, Repository } from 'typeorm';
 
-import { User } from '../models/User';
+import { User } from '../../entities/User';
+import { inject, injectable } from 'tsyringe';
 
+@injectable()
 export class UserRepository extends Repository<User> {
-    constructor(private dataSource: DataSource)
+    constructor(@inject("DataSource") private dataSource: DataSource)
     {
         super(User, dataSource.createEntityManager());
     }

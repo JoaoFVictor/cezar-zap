@@ -1,5 +1,5 @@
-import { Action } from '../models/Action';
-import { DefaultAction } from '../use-case/DefaultAction';
+import { Action } from '../../../entities/Action';
+import { DefaultAction } from '../DefaultAction';
 
 export class ActionFactory {
     createAction(actionData: Action): Action {

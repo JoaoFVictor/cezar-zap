@@ -1,4 +1,4 @@
-import { Action } from "../models/Action";
+import { Action } from "../../entities/Action";
 
 export class DefaultAction extends Action {
     execute(): string | void{

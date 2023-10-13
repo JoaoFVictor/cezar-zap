@@ -1,6 +1,8 @@
-import { Menu } from '../models/Menu';
+import { Menu } from '../../entities/Menu';
 import { MenuRepository } from '../repositories/MenuRepository';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class MenuService {
     constructor(private menuRepository: MenuRepository) {}
 

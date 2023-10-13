@@ -11,9 +11,9 @@ const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_DATABASE,
   logging: false,
   synchronize: true,
-  entities: ["src/**/models/*.ts"],
+  entities: ["src/entities/*.ts"],
   migrations: [
-    "src/migration/*.ts"
+    "src/database/migration/*.ts"
   ],
 }
 

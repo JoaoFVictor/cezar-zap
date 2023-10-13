@@ -1,9 +1,11 @@
-import { DataSource, EntityRepository, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
-import { Menu } from '../models/Menu';
+import { Menu } from '../../entities/Menu';
+import { inject, injectable } from 'tsyringe';
 
+@injectable()
 export class MenuRepository extends Repository<Menu> {
-    constructor(private dataSource: DataSource)
+    constructor(@inject("DataSource") private dataSource: DataSource)
     {
         super(Menu, dataSource.createEntityManager());
     }

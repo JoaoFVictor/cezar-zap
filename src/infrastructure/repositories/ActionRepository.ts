@@ -1,9 +1,11 @@
 import { DataSource, Repository } from 'typeorm';
 
-import { Action } from '../models/Action';
+import { Action } from '../../entities/Action';
+import { inject, injectable } from 'tsyringe';
 
+@injectable()
 export class ActionRepository extends Repository<Action> {
-    constructor(private dataSource: DataSource)
+    constructor(@inject("DataSource")  private dataSource: DataSource)
     {
         super(Action, dataSource.createEntityManager());
     }

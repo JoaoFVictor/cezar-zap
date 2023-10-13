@@ -1,8 +1,10 @@
 import { Client, LocalAuth } from 'whatsapp-web.js';
 
 import { MessageProcessor } from './MessageProcessor';
+import { injectable } from 'tsyringe';
 import qrcode from 'qrcode-terminal';
 
+@injectable()
 export class WhatsAppBot {
     private client: Client;
     private messageProcessor: MessageProcessor;

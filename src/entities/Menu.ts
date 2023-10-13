@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Action } from '../../actions/models/Action';
+import { Action } from './Action';
 
 @Entity('menus')
 export class Menu {
