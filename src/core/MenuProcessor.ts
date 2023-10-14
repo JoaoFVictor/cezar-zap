@@ -65,7 +65,7 @@ export class MenuProcessor {
         }
 
         if (option.action) {
-            let response = await this.executeAction.execute(option.action.id);
+            const response = await this.executeAction.execute(option.action.id);
             if (response) {
                 return response;
             }
