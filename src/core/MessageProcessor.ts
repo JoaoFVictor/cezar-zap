@@ -2,13 +2,13 @@ import { AuthenticateUserUseCase } from '../use-cases/auth/AuthenticateUserUseCa
 import { GenerateOtpUseCase } from '../use-cases/auth/GenerateOtpUseCase';
 import { MenuProcessor } from './MenuProcessor';
 import { RefreshTokenUseCase } from '../use-cases/auth/RefreshTokenUseCase';
-import { UserRepository } from '../infrastructure/repositories/UserRepository';
+import { UserService } from '../infrastructure/services/UserService';
 import { injectable } from 'tsyringe';
 
 @injectable()
 export class MessageProcessor {
     constructor(
-        private userRepository: UserRepository,
+        private userService: UserService,
         private menuProcessor: MenuProcessor,
         private generateOtpUseCase: GenerateOtpUseCase,
         private authenticateUserUseCase: AuthenticateUserUseCase,
@@ -16,7 +16,7 @@ export class MessageProcessor {
     ) {}
 
     async processMessage(phoneNumber: string, messageText: string): Promise <string | undefined> {
-        const phoneRegister = await this.userRepository.findByPhoneNumber(phoneNumber);
+        const phoneRegister = await this.userService.findByPhoneNumber(phoneNumber);
         if (!phoneRegister) {
             const otp = await this.generateOtpUseCase.execute(phoneNumber);
             return `Verifiquei que você não é cadastrado no sistema, seu código de autenticação é ${otp} \nEsse código poderá ser pedido para autenticar você no sistema.\nMe responda com o código de autenticação.`;

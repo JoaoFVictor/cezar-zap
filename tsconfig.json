@@ -9,8 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src/**/*.ts", "src/database/data-source.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

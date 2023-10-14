@@ -7,10 +7,8 @@ import qrcode from 'qrcode-terminal';
 @injectable()
 export class WhatsAppBot {
     private client: Client;
-    private messageProcessor: MessageProcessor;
 
-    constructor(messageProcessor: MessageProcessor) {
-        this.messageProcessor = messageProcessor;
+    constructor(private messageProcessor: MessageProcessor) {
         this.client = new Client({
             puppeteer: {
                 args: ['--no-sandbox'],

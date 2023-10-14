@@ -28,10 +28,12 @@ services:
     ports:
       - "5432:5432"
   redis:
-    image: redis
+    image: redis:alpine
     container_name: redis
     networks:
       - cezarzap
+    ports:
+      - "6379:6379"
 networks:
   cezarzap:
     driver: bridge

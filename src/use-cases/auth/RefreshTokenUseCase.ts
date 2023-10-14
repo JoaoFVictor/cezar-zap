@@ -1,11 +1,11 @@
 import { TokenService } from "../../infrastructure/services/TokenService";
-import { UserRepository } from "../../infrastructure/repositories/UserRepository";
+import { UserService } from "../../infrastructure/services/UserService";
 import { injectable } from "tsyringe";
 
 @injectable()
 export class RefreshTokenUseCase {
     constructor(
-        private userRepository: UserRepository, 
+        private userService: UserService, 
         private tokenService: TokenService
     ) {}
 
@@ -18,10 +18,10 @@ export class RefreshTokenUseCase {
             }
 
             const newToken = this.tokenService.generateToken(decoded);
-            const user = await this.userRepository.findByPhoneNumber(decoded.phoneNumber);
+            const user = await this.userService.findByPhoneNumber(decoded.phoneNumber);
             if (user) {
                 user.token = newToken;
-                await this.userRepository.updateUser(user);
+                await this.userService.updateUser(user);
             }
             return newToken;
         }

@@ -6,13 +6,8 @@ import { injectable } from 'tsyringe';
 @injectable()
 export class MenuProcessor {
     private userMenuStates: Map<string, { currentMenu: Menu, menuStack: Menu[] }> = new Map();
-    private executeAction: ExecuteAction;
-    private menuService: MenuService;
 
-    constructor(executeAction: ExecuteAction, menuService: MenuService) {
-        this.executeAction = executeAction;
-        this.menuService = menuService;
-    }
+    constructor(private executeAction: ExecuteAction, private menuService: MenuService) {}
 
     async processMenuCommand(userId: string, command: string): Promise <string> {
         let response = '';
