@@ -1,9 +1,10 @@
 version: '3'
 
 services:
-  whatsapp-bot-dev:
+  cezarzap-bot:
     build:
       context: .
+    container_name: cezarzap-bot
     volumes:
       - .:/usr/src/app
     networks:
@@ -12,11 +13,11 @@ services:
       - NODE_ENV=development
     command: npm run dev
     depends_on:
-      - postgres
-      - redis
-  postgres:
+      - cezarzap-postgres
+      - cezarzap-redis
+  cezarzap-postgres:
     image: postgres:alpine
-    container_name: postgres
+    container_name: cezarzap-postgres
     restart: always
     environment:
       PGPASSWORD: 'postgres'
@@ -27,13 +28,26 @@ services:
       - cezarzap
     ports:
       - "5432:5432"
-  redis:
+  cezarzap-redis:
     image: redis:alpine
-    container_name: redis
+    container_name: cezarzap-redis
     networks:
       - cezarzap
     ports:
       - "6379:6379"
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    restart: always
+    networks:
+      - cezarzap
+    environment:
+      - REDIS_HOSTS=cezarzap-redis
+    ports:
+      - "8081:8081"
+    depends_on:
+      - cezarzap-redis
 networks:
   cezarzap:
     driver: bridge

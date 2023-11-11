@@ -7,11 +7,11 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node dist/index.js",
-    "dev": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts && nodemon src/index.ts",
+    "dev": "typeorm-ts-node-commonjs migration:run -d src/infrastructure/database/data-source.ts && nodemon src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migration:show": "typeorm-ts-node-commonjs migration:show -d src/database/data-source.ts",
+    "migration:show": "typeorm-ts-node-commonjs migration:show -d src/infrastructure/database/data-source.ts",
     "migration:create": "typeorm-ts-node-commonjs migration:create",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts"
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/infrastructure/database/data-source.ts"
   },
   "keywords": [],
   "author": "",
