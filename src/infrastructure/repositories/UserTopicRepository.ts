@@ -1,8 +1,8 @@
 import { DataSource, Repository, IsNull } from 'typeorm';
 
-import { UserTopic } from '../../entities/UserTopic';
 import { inject, injectable } from 'tsyringe';
-import { User } from '../../entities/User';
+import { UserTopic } from '../../application/entities/UserTopic';
+import { User } from '../../application/entities/User';
 
 @injectable()
 export class UserTopicRepository extends Repository<UserTopic> {

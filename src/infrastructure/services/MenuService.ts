@@ -1,8 +1,8 @@
 import { CacheService } from '../cache/CacheService';
 import { CacheTimes } from '../../config/CacheTimes';
-import { Menu } from '../../entities/Menu';
+import { Menu } from '../../application/entities/Menu';
 import { MenuRepository } from '../repositories/MenuRepository';
-import { User } from '../../entities/User';
+import { User } from '../../application/entities/User';
 import { injectable } from 'tsyringe';
 
 @injectable()

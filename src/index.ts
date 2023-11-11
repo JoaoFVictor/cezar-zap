@@ -3,10 +3,10 @@ import 'dotenv/config';
 
 import { Client, LocalAuth } from 'whatsapp-web.js';
 
-import { AppDataSource } from './database/data-source';
+import { AppDataSource } from './infrastructure/database/data-source';
 import { DataSource } from 'typeorm';
 import Redis from 'ioredis';
-import { WhatsAppBot } from './core/Bot';
+import { WhatsAppBot } from './infrastructure/web/Bot';
 import { container } from 'tsyringe';
 
 (async function main() {

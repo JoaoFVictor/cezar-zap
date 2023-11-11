@@ -1,9 +1,9 @@
 import { CacheService } from '../cache/CacheService';
 import { CacheTimes } from '../../config/CacheTimes';
-import { User } from '../../entities/User';
-import { UserExpense } from '../../entities/UserExpense';
+import { User } from '../../application/entities/User';
+import { UserExpense } from '../../application/entities/UserExpense';
 import { UserExpenseRepository } from '../repositories/UserExpenseRepository';
-import UserExpenseState from '../../entities/enums/UserExpenseState';
+import UserExpenseState from '../../application/entities/enums/UserExpenseState';
 import { injectable } from 'tsyringe';
 
 @injectable()

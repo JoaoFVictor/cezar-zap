@@ -1,4 +1,4 @@
-import { Action } from '../../entities/Action';
+import { Action } from '../../application/entities/Action';
 import { ActionRepository } from '../repositories/ActionRepository';
 import { CacheService } from '../cache/CacheService';
 import { CacheTimes } from '../../config/CacheTimes';

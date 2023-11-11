@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 
 import { inject, injectable } from 'tsyringe';
-import { UserRevenue } from '../../entities/UserRevenue';
+import { UserRevenue } from '../../application/entities/UserRevenue';
 
 @injectable()
 export class UserRevenueRepository extends Repository<UserRevenue> {

@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 
-import { Message } from '../../entities/Message';
 import { inject, injectable } from 'tsyringe';
+import { Message } from '../../application/entities/Message';
 
 @injectable()
 export class MessageRepository extends Repository<Message> {

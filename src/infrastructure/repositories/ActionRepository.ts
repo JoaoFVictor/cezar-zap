@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 
-import { Action } from '../../entities/Action';
 import { inject, injectable } from 'tsyringe';
+import { Action } from '../../application/entities/Action';
 
 @injectable()
 export class ActionRepository extends Repository<Action> {

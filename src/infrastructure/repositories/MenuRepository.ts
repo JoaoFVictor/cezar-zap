@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 
-import { Menu } from '../../entities/Menu';
 import { inject, injectable } from 'tsyringe';
+import { Menu } from '../../application/entities/Menu';
 
 @injectable()
 export class MenuRepository extends Repository<Menu> {

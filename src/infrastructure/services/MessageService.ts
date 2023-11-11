@@ -1,9 +1,9 @@
+import { Message } from "../../application/entities/Message";
+import Commands from "../../application/entities/enums/Commands";
 import { CacheService } from "../cache/CacheService";
-import { Message } from "../../entities/Message";
 import { MessageRepository } from "../repositories/MessageRepository";
 import { inject, injectable } from "tsyringe";
 import { Client } from "whatsapp-web.js";
-import Commands from "../../entities/enums/Commands";
 
 @injectable()
 export class MessageService {

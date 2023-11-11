@@ -1,6 +1,6 @@
 import { CacheService } from '../cache/CacheService';
 import { CacheTimes } from '../../config/CacheTimes';
-import { User } from '../../entities/User';
+import { User } from '../../application/entities/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { injectable } from 'tsyringe';
 
