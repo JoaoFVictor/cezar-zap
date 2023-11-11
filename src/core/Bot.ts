@@ -1,21 +1,11 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
-
+import { Client } from 'whatsapp-web.js';
 import { MessageProcessor } from './MessageProcessor';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import qrcode from 'qrcode-terminal';
 
 @injectable()
 export class WhatsAppBot {
-    private client: Client;
-
-    constructor(private messageProcessor: MessageProcessor) {
-        this.client = new Client({
-            puppeteer: {
-                args: ['--no-sandbox'],
-            },
-            authStrategy: new LocalAuth()
-        });
-    }
+    constructor(private messageProcessor: MessageProcessor, @inject("ClientWhatsApp") private client: Client) {}
 
     async initialize() {
         this.client.on('qr', qr => {
@@ -32,10 +22,7 @@ export class WhatsAppBot {
 
         this.client.on('message', async (message) => {
             console.log('Mensagem recebida de', message.from, message.body);
-            const response = await this.messageProcessor.processMessage(message.from, message.body);
-            if (response) {
-                message.reply(response);
-            }
+            await this.messageProcessor.processMessage(message.from, message.body);
         });
 
         this.client.on('disconnected', (reason) => {

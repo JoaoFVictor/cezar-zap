@@ -13,8 +13,7 @@ export class CreateMenuTable1697126280461 implements MigrationInterface {
                 action_id integer REFERENCES actions(id)
             )
         `);
-        
-        // Adicionando a coluna parent_id após a tabela menus ser criada
+
         await queryRunner.query(`
             ALTER TABLE menus ADD COLUMN parent_id integer REFERENCES menus(id)
         `);

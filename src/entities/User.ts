@@ -1,9 +1,12 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
 
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
+    public id!: number;
+
+    @Column()
     public phone_number: string;
     
     @Column({ default: false })

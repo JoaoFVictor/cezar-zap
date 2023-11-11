@@ -13,4 +13,8 @@ export class ActionRepository extends Repository<Action> {
     async findById(id: number): Promise <Action | null> {
         return await this.findOneBy({id: id});
     }
+
+    async findByType(actionType: string): Promise <Action | null> {
+        return await this.findOneBy({action_type: actionType});
+    }
 }

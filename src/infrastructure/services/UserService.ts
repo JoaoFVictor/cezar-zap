@@ -15,10 +15,12 @@ export class UserService {
     }
 
     async createUser(user: User): Promise<User | null> {
-        return await this.userRepository.save(user);
+        await this.cacheService.forget(`get_user_by_phone_number_${user.phone_number}`);
+        return await this.userRepository.createUser(user);
     }
 
     async updateUser(user: User): Promise<User | null> {
-        return await this.userRepository.save(user);
+        await this.cacheService.forget(`get_user_by_phone_number_${user.phone_number}`);
+        return await this.userRepository.updateUser(user);
     }
 }

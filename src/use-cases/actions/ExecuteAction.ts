@@ -1,5 +1,6 @@
 import { ActionFactory } from './factories/ActionFactory';
 import { ActionService } from '../../infrastructure/services/ActionService';
+import { User } from '../../entities/User';
 import { injectable } from 'tsyringe';
 
 @injectable()
@@ -9,10 +10,10 @@ export class ExecuteAction {
         private actionFactory: ActionFactory
     ) {}
 
-    async execute(id: number): Promise<string | void> {
+    public async execute(id: number, user: User): Promise<string | void> {
         const actionData = await this.actionService.findById(id);
         if (!actionData) return;
         const actionInstance = this.actionFactory.createAction(actionData);
-        return actionInstance.execute();
+        return await actionInstance.execute(user);
     }
 }

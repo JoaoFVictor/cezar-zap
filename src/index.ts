@@ -1,8 +1,10 @@
 import 'reflect-metadata';
+import 'dotenv/config';
+
+import { Client, LocalAuth } from 'whatsapp-web.js';
 
 import { AppDataSource } from './database/data-source';
 import { DataSource } from 'typeorm';
-import { MessageProcessor } from './core/MessageProcessor';
 import Redis from 'ioredis';
 import { WhatsAppBot } from './core/Bot';
 import { container } from 'tsyringe';
@@ -10,16 +12,24 @@ import { container } from 'tsyringe';
 (async function main() {
   try {
     const dataSourceInstance = await AppDataSource.initialize();
-    container.register<DataSource>("DataSource", { useValue: dataSourceInstance });
-    container.register<Redis>("RedisToken", { useValue: new Redis({
-        port: 6379,
-        host: "redis",
-      })
+    const redis = new Redis({
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT!),
     });
+    await redis.flushall();
+    const client = new Client({
+        puppeteer: {
+            args: ['--no-sandbox'],
+        },
+        authStrategy: new LocalAuth()
+    });
+
+    container.register<DataSource>("DataSource", { useValue: dataSourceInstance });
+    container.register<Redis>("RedisToken", { useValue: redis });
+    container.register<Client>("ClientWhatsApp", { useValue: client });
     console.log("Data Source has been initialized!");
 
-    const messageProcessor = container.resolve(MessageProcessor);
-    const bot = new WhatsAppBot(messageProcessor);
+    const bot = container.resolve(WhatsAppBot);
     bot.initialize();
   } catch (error) {
     console.error("Error initializing the app:", error);

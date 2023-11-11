@@ -6,12 +6,11 @@ export class InsertActionData1697151395196 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         // Inserindo algumas ações de exemplo na tabela "actions"
         await queryRunner.query(`
-            INSERT INTO actions (description)
+            INSERT INTO actions (description, action_type)
             VALUES 
-                ('Descrição da Ação 1'),
-                ('Descrição da Ação 2'),
-                ('Descrição da Ação 3'),
-                ('Descrição da Ação 4')
+                ('Start user topic', 'user-topic-init'),
+                ('Start user expense', 'user-expense-init'),
+                ('Start user revenue', 'user-revenue-init')
         `);
     }
 
@@ -19,7 +18,7 @@ export class InsertActionData1697151395196 implements MigrationInterface {
         // Removendo as ações inseridas pela função `up` desta migração.
         await queryRunner.query(`
             DELETE FROM actions 
-            WHERE description IN ('Descrição da Ação 1', 'Descrição da Ação 2', 'Descrição da Ação 3', 'Descrição da Ação 4')
+            WHERE description IN ('Start user topic', 'Start user expense', 'Start user revenue')
         `);
     }
 }
