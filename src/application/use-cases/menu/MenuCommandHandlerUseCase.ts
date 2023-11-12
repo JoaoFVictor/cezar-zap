@@ -1,4 +1,4 @@
-import Commands from '../../entities/enums/Commands';
+import Commands from '../../entities/enums/CommandsEnum';
 import { ExecuteAction } from '../actions/ExecuteAction';
 import { MenuService } from '../../../infrastructure/services/MenuService';
 import { MessageService } from '../../../infrastructure/services/MessageService';
@@ -6,7 +6,7 @@ import { User } from '../../entities/User';
 import { injectable } from 'tsyringe';
 
 @injectable()
-export class MenuCommandHandler {
+export class MenuCommandHandlerUseCase {
     constructor(
         private executeAction: ExecuteAction,
         private menuService: MenuService,

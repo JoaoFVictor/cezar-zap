@@ -1,9 +1,9 @@
 import { Action } from '../../../entities/Action';
 import { CacheService } from '../../../../infrastructure/cache/CacheService';
 import { DefaultAction } from '../DefaultAction';
-import { UserExpenseInit } from '../../user-expense/UserExpenseInit';
-import { UserRevenueInit } from '../../user-revenue/UserRevenueInit';
-import { UserTopicChatInit } from '../../user-topic/UserTopicChatInit';
+import { UserExpenseInitUseCase } from '../../user-expense/UserExpenseInitUseCase';
+import { UserRevenueInitUseCase } from '../../user-revenue/UserRevenueInitUseCase';
+import { UserTopicChatInitUseCase } from '../../user-topic/UserTopicChatInitUseCase';
 import { injectable } from 'tsyringe';
 
 @injectable()
@@ -17,11 +17,11 @@ export class ActionFactory {
             case null:
                 return new DefaultAction(actionData.description, actionData.action_type, this.cacheService);
             case 'user-topic-init':
-                return new UserTopicChatInit(actionData.description, actionData.action_type, this.cacheService);
+                return new UserTopicChatInitUseCase(actionData.description, actionData.action_type, this.cacheService);
             case 'user-expense-init':
-                return new UserExpenseInit(actionData.description, actionData.action_type, this.cacheService);
+                return new UserExpenseInitUseCase(actionData.description, actionData.action_type, this.cacheService);
             case 'user-revenue-init':
-                return new UserRevenueInit(actionData.description, actionData.action_type, this.cacheService);
+                return new UserRevenueInitUseCase(actionData.description, actionData.action_type, this.cacheService);
             default:
                 return new DefaultAction(actionData.description, actionData.action_type, this.cacheService);
         }

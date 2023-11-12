@@ -1,5 +1,5 @@
 import { Message } from "../../application/entities/Message";
-import Commands from "../../application/entities/enums/Commands";
+import Commands from "../../application/entities/enums/CommandsEnum";
 import { CacheService } from "../cache/CacheService";
 import { MessageRepository } from "../repositories/MessageRepository";
 import { inject, injectable } from "tsyringe";

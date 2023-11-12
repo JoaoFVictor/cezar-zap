@@ -1,15 +1,15 @@
-import Commands from '../../entities/enums/Commands';
+import Commands from '../../entities/enums/CommandsEnum';
 import { MessageService } from '../../../infrastructure/services/MessageService';
 import { User } from '../../entities/User';
 import { UserRevenueService } from '../../../infrastructure/services/UserRevenueService';
-import UserRevenueState from '../../entities/enums/UserRevenueState';
+import UserRevenueState from '../../entities/enums/UserRevenueStateEnum';
 import { UserTopic } from '../../entities/UserTopic';
-import { UserTopicCommandHandler } from '../user-topic/UserTopicCommandHandler';
+import { UserTopicCommandHandlerUseCase } from '../user-topic/UserTopicCommandHandlerUseCase';
 import { injectable } from 'tsyringe';
 
 @injectable()
-export class UserRevenueCommandHandler {
-    constructor(private userRevenueService: UserRevenueService, private messageService: MessageService, private userTopicCommand: UserTopicCommandHandler) {}
+export class UserRevenueCommandHandlerUseCase {
+    constructor(private userRevenueService: UserRevenueService, private messageService: MessageService, private userTopicCommandHandlerUseCase: UserTopicCommandHandlerUseCase) {}
 
     async processUserRevenueCommand(user: User, command: string): Promise<void> {
         switch (command) {
@@ -59,6 +59,6 @@ export class UserRevenueCommandHandler {
 
     private async goBack(user: User): Promise<void> {
         await this.userRevenueService.forgetUserRevenue(user);
-        await this.userTopicCommand.displayUserTopic(user);
+        await this.userTopicCommandHandlerUseCase.displayUserTopic(user);
     }
 }

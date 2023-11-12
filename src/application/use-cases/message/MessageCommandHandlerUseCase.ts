@@ -1,30 +1,30 @@
 import { AuthenticateUserUseCase } from '../auth/AuthenticateUserUseCase';
 import { CacheService } from '../../../infrastructure/cache/CacheService';
 import { GenerateOtpUseCase } from '../auth/GenerateOtpUseCase';
-import { MenuCommandHandler } from '../menu/MenuCommandHandler';
+import { MenuCommandHandlerUseCase } from '../menu/MenuCommandHandlerUseCase';
 import { Message } from '../../entities/Message';
 import { MessageService } from '../../../infrastructure/services/MessageService';
 import { RefreshTokenUseCase } from '../auth/RefreshTokenUseCase';
 import { User } from '../../entities/User';
-import { UserExpenseCommandHandler } from '../user-expense/UserExpenseCommandHandler';
-import { UserRevenueCommandHandler } from '../user-revenue/UserRevenueCommandHandler';
+import { UserExpenseCommandHandlerUseCase } from '../user-expense/UserExpenseCommandHandlerUseCase';
+import { UserRevenueCommandHandlerUseCase } from '../user-revenue/UserRevenueCommandHandlerUseCase';
 import { UserService } from '../../../infrastructure/services/UserService';
-import { UserTopicCommandHandler } from '../user-topic/UserTopicCommandHandler';
+import { UserTopicCommandHandlerUseCase } from '../user-topic/UserTopicCommandHandlerUseCase';
 import { injectable } from 'tsyringe';
 
 @injectable()
-export class MessageCommandHandler {
+export class MessageCommandHandlerUseCase {
     constructor(
         private userService: UserService,
-        private menuCommand: MenuCommandHandler,
+        private menuCommandHandlerUseCase: MenuCommandHandlerUseCase,
         private generateOtpUseCase: GenerateOtpUseCase,
         private authenticateUserUseCase: AuthenticateUserUseCase,
         private refreshTokenUseCase: RefreshTokenUseCase,
         private cacheService: CacheService,
-        private userTopicCommand: UserTopicCommandHandler,
+        private userTopicCommandHandlerUseCase: UserTopicCommandHandlerUseCase,
         private messageService: MessageService,
-        private userExpenseCommand: UserExpenseCommandHandler,
-        private userRevenueCommand: UserRevenueCommandHandler
+        private userExpenseCommandHandlerUseCase: UserExpenseCommandHandlerUseCase,
+        private userRevenueCommandHandlerUseCase: UserRevenueCommandHandlerUseCase
     ) {}
 
     public async processMessage(phoneNumber: string, content: string): Promise <void> {
@@ -48,19 +48,19 @@ export class MessageCommandHandler {
         }
 
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_expensive`)) {
-            this.userExpenseCommand.processUserExpenseCommand(userRegister, content);
+            this.userExpenseCommandHandlerUseCase.processUserExpenseCommand(userRegister, content);
             return;
         }
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_revenue`)) {
-            this.userRevenueCommand.processUserRevenueCommand(userRegister, content);
+            this.userRevenueCommandHandlerUseCase.processUserRevenueCommand(userRegister, content);
             return;
         }
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_topic_chat`)) {
-            this.userTopicCommand.processUserTopicCommand(userRegister, content);
+            this.userTopicCommandHandlerUseCase.processUserTopicCommand(userRegister, content);
             return;
         }
 
-        this.menuCommand.processMenuCommand(userRegister, content);
+        this.menuCommandHandlerUseCase.processMenuCommand(userRegister, content);
     }
 
     private registerMessageReceived(phoneNumber: string, user: User, content: string): void {

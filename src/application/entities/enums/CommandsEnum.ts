@@ -1,8 +1,8 @@
-enum Commands {
+enum CommandsEnum {
     BACK = "BACK",
     RESTART = "RESTART",
     CREATE = "CREATE",
     SKIP = "SKIP",
 }
 
-export default Commands;
+export default CommandsEnum;

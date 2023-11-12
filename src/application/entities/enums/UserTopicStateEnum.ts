@@ -1,4 +1,4 @@
-enum UserTopicState {
+enum UserTopicStateEnum {
     DEFAULT,
     AWAITING_TOPIC_TITLE,
     AWAITING_TOPIC_OPTION,
@@ -6,4 +6,4 @@ enum UserTopicState {
     AWAITING_TOPIC_DESCRIPTION
 }
 
-export default UserTopicState;
+export default UserTopicStateEnum;

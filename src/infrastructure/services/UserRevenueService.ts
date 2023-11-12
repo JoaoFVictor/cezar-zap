@@ -3,7 +3,7 @@ import { CacheTimes } from '../../config/CacheTimes';
 import { User } from '../../application/entities/User';
 import { UserRevenue } from '../../application/entities/UserRevenue';
 import { UserRevenueRepository } from '../repositories/UserRevenueRepository';
-import UserRevenueState from '../../application/entities/enums/UserRevenueState';
+import UserRevenueState from '../../application/entities/enums/UserRevenueStateEnum';
 import { injectable } from 'tsyringe';
 
 @injectable()

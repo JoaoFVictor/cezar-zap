@@ -1,24 +1,24 @@
 import { container, injectable } from 'tsyringe';
 
 import { ActionService } from '../../../infrastructure/services/ActionService';
-import Actions from '../../entities/enums/Actions';
-import Commands from '../../entities/enums/Commands';
+import Actions from '../../entities/enums/ActionsEnum';
+import Commands from '../../entities/enums/CommandsEnum';
 import { ExecuteAction } from '../actions/ExecuteAction';
-import { MenuCommandHandler } from '../menu/MenuCommandHandler';
+import { MenuCommandHandlerUseCase } from '../menu/MenuCommandHandlerUseCase';
 import { MessageService } from '../../../infrastructure/services/MessageService';
 import { User } from '../../entities/User';
 import { UserTopic } from '../../entities/UserTopic';
 import { UserTopicService } from '../../../infrastructure/services/UserTopicService';
-import UserTopicState from '../../entities/enums/UserTopicState';
+import UserTopicState from '../../entities/enums/UserTopicStateEnum';
 
 @injectable()
-export class UserTopicCommandHandler {
-    private menuCommand: MenuCommandHandler;
+export class UserTopicCommandHandlerUseCase {
+    private menuCommandHandlerUseCase: MenuCommandHandlerUseCase;
     private executeAction: ExecuteAction;
     private actionService: ActionService;
 
     constructor(private userTopicService: UserTopicService, private messageService: MessageService) {
-        this.menuCommand = container.resolve(MenuCommandHandler);
+        this.menuCommandHandlerUseCase = container.resolve(MenuCommandHandlerUseCase);
         this.executeAction = container.resolve(ExecuteAction);
         this.actionService = container.resolve(ActionService);
     }
@@ -118,7 +118,7 @@ export class UserTopicCommandHandler {
                 break;
             case Commands.RESTART:
                 await this.initializeUserTopicStage(user);
-                await this.menuCommand.initializeUserMenuStage(user);
+                await this.menuCommandHandlerUseCase.initializeUserMenuStage(user);
                 break;
             case Commands.CREATE:
                 await this.promptUserToCreateTopic(user);

@@ -1,11 +1,11 @@
 import { Client } from 'whatsapp-web.js';
 import { inject, injectable } from 'tsyringe';
 import qrcode from 'qrcode-terminal';
-import { MessageCommandHandler } from '../../application/use-cases/message/MessageCommandHandler';
+import { MessageCommandHandlerUseCase } from '../../application/use-cases/message/MessageCommandHandlerUseCase';
 
 @injectable()
 export class WhatsAppBot {
-    constructor(private messageCommand: MessageCommandHandler, @inject("ClientWhatsApp") private client: Client) {}
+    constructor(private messageCommandHandlerUseCase: MessageCommandHandlerUseCase, @inject("ClientWhatsApp") private client: Client) {}
 
     async initialize() {
         this.client.on('qr', qr => {
@@ -22,7 +22,7 @@ export class WhatsAppBot {
 
         this.client.on('message', async (message) => {
             console.log('Mensagem recebida de', message.from, message.body);
-            await this.messageCommand.processMessage(message.from, message.body);
+            await this.messageCommandHandlerUseCase.processMessage(message.from, message.body);
         });
 
         this.client.on('disconnected', (reason) => {
