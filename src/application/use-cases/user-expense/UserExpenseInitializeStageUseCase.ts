@@ -8,11 +8,25 @@ import { injectable } from 'tsyringe';
 
 @injectable()
 export class UserExpenseInitializeStageUseCase {
-    constructor(private userExpenseService: UserExpenseService, private messageService: MessageService) {}
-    
-    async execute(user: User): Promise<{ currentUserTopic: UserTopic, userTopicStack: UserTopic[] } | void> {
-        await this.userExpenseService.setUserExpenseState(user, UserExpenseState.AWAITING_EXPENSE_VALUE);
-        await this.messageService.sendMessage(user.phone_number, "Por favor o valor da despesa:", true, `Escreva ${Commands.CREATE} para criar novo tipo de despesa`);
-        return;
-    }
+  constructor(
+    private userExpenseService: UserExpenseService,
+    private messageService: MessageService
+  ) {}
+
+  async execute(user: User): Promise<{
+    currentUserTopic: UserTopic;
+    userTopicStack: UserTopic[];
+  } | void> {
+    await this.userExpenseService.setUserExpenseState(
+      user,
+      UserExpenseState.AWAITING_EXPENSE_VALUE
+    );
+    await this.messageService.sendMessage(
+      user.phone_number,
+      'Por favor o valor da despesa:',
+      true,
+      `Escreva ${Commands.CREATE} para criar novo tipo de despesa`
+    );
+    return;
+  }
 }

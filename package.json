@@ -11,7 +11,9 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:show": "typeorm-ts-node-commonjs migration:show -d src/infrastructure/database/data-source.ts",
     "migration:create": "typeorm-ts-node-commonjs migration:create",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/infrastructure/database/data-source.ts"
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/infrastructure/database/data-source.ts",
+    "lint": "eslint src/**/*.{ts,tsx} --quiet --fix",
+    "format": "prettier --write 'src/**/*.ts'"
   },
   "keywords": [],
   "author": "",
@@ -22,10 +24,13 @@
     "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "^20.8.6",
     "@types/qrcode-terminal": "^0.12.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
-    "eslint": "^8.51.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "nodemon": "^3.0.1",
+    "prettier": "^3.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },

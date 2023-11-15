@@ -11,11 +11,9 @@ const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_DATABASE,
   logging: false,
   synchronize: true,
-  entities: ["src/application/entities/*.ts"],
-  migrations: [
-    "src/infrastructure/database/migration/*.ts"
-  ],
-}
+  entities: ['src/application/entities/*.ts'],
+  migrations: ['src/infrastructure/database/migration/*.ts'],
+};
 
-const AppDataSource = new DataSource(dataSourceOptions)
-export { AppDataSource }
+const AppDataSource = new DataSource(dataSourceOptions);
+export { AppDataSource };

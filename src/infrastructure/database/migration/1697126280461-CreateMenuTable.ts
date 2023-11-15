@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateMenuTable1697126280461 implements MigrationInterface {
-    name = 'CreateMenuTable1697126280461';
+  name = 'CreateMenuTable1697126280461';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE menus (
                 id serial PRIMARY KEY,
                 option character varying NOT NULL,
@@ -14,12 +14,12 @@ export class CreateMenuTable1697126280461 implements MigrationInterface {
             )
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE menus ADD COLUMN parent_id integer REFERENCES menus(id)
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP TABLE menus`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE menus`);
+  }
 }

@@ -18,20 +18,22 @@ import { container } from 'tsyringe';
     });
     await redis.flushall();
     const client = new Client({
-        puppeteer: {
-            args: ['--no-sandbox'],
-        },
-        authStrategy: new LocalAuth()
+      puppeteer: {
+        args: ['--no-sandbox'],
+      },
+      authStrategy: new LocalAuth(),
     });
 
-    container.register<DataSource>("DataSource", { useValue: dataSourceInstance });
-    container.register<Redis>("RedisToken", { useValue: redis });
-    container.register<Client>("ClientWhatsApp", { useValue: client });
-    console.log("Data Source has been initialized!");
+    container.register<DataSource>('DataSource', {
+      useValue: dataSourceInstance,
+    });
+    container.register<Redis>('RedisToken', { useValue: redis });
+    container.register<Client>('ClientWhatsApp', { useValue: client });
+    console.log('Data Source has been initialized!');
 
     const bot = container.resolve(WhatsAppBot);
     bot.initialize();
   } catch (error) {
-    console.error("Error initializing the app:", error);
+    console.error('Error initializing the app:', error);
   }
 })();

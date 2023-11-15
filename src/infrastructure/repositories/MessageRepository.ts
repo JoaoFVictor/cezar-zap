@@ -5,12 +5,11 @@ import { Message } from '../../application/entities/Message';
 
 @injectable()
 export class MessageRepository extends Repository<Message> {
-    constructor(@inject("DataSource") private dataSource: DataSource)
-    {
-        super(Message, dataSource.createEntityManager());
-    }
+  constructor(@inject('DataSource') private dataSource: DataSource) {
+    super(Message, dataSource.createEntityManager());
+  }
 
-    async createMessage(message: Message): Promise<Message> {
-        return await this.save(message);
-    }
+  async createMessage(message: Message): Promise<Message> {
+    return await this.save(message);
+  }
 }

@@ -8,22 +8,40 @@ import { injectable } from 'tsyringe';
 
 @injectable()
 export class ActionFactory {
-    constructor(
-        private cacheService: CacheService,
-    ) {}
+  constructor(private cacheService: CacheService) {}
 
-    execute(actionData: Action): Action {
-        switch(actionData.action_type) {
-            case null:
-                return new DefaultAction(actionData.description, actionData.action_type, this.cacheService);
-            case 'user-topic-init':
-                return new UserTopicChatInitAction(actionData.description, actionData.action_type, this.cacheService);
-            case 'user-expense-init':
-                return new UserExpenseInitAction(actionData.description, actionData.action_type, this.cacheService);
-            case 'user-revenue-init':
-                return new UserRevenueInitAction(actionData.description, actionData.action_type, this.cacheService);
-            default:
-                return new DefaultAction(actionData.description, actionData.action_type, this.cacheService);
-        }
+  execute(actionData: Action): Action {
+    switch (actionData.action_type) {
+      case null:
+        return new DefaultAction(
+          actionData.description,
+          actionData.action_type,
+          this.cacheService
+        );
+      case 'user-topic-init':
+        return new UserTopicChatInitAction(
+          actionData.description,
+          actionData.action_type,
+          this.cacheService
+        );
+      case 'user-expense-init':
+        return new UserExpenseInitAction(
+          actionData.description,
+          actionData.action_type,
+          this.cacheService
+        );
+      case 'user-revenue-init':
+        return new UserRevenueInitAction(
+          actionData.description,
+          actionData.action_type,
+          this.cacheService
+        );
+      default:
+        return new DefaultAction(
+          actionData.description,
+          actionData.action_type,
+          this.cacheService
+        );
     }
+  }
 }
