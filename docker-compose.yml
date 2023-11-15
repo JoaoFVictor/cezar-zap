@@ -1,53 +1,20 @@
 version: '3'
 
 services:
-  cezarzap-bot:
+  cezar-zap:
     build:
       context: .
-    container_name: cezarzap-bot
+    container_name: cezar-zap
     volumes:
       - .:/usr/src/app
     networks:
-      - cezarzap
+      - cezar
     environment:
       - NODE_ENV=development
     command: npm run dev
     depends_on:
-      - cezarzap-postgres
-      - cezarzap-redis
-  cezarzap-postgres:
-    image: postgres:alpine
-    container_name: cezarzap-postgres
-    restart: always
-    environment:
-      PGPASSWORD: 'postgres'
-      POSTGRES_DB: 'cezarzap'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-    networks:
-      - cezarzap
-    ports:
-      - "5432:5432"
-  cezarzap-redis:
-    image: redis:alpine
-    container_name: cezarzap-redis
-    networks:
-      - cezarzap
-    ports:
-      - "6379:6379"
-  redis-commander:
-    container_name: redis-commander
-    hostname: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    restart: always
-    networks:
-      - cezarzap
-    environment:
-      - REDIS_HOSTS=cezarzap-redis
-    ports:
-      - "8081:8081"
-    depends_on:
-      - cezarzap-redis
+      - cezar-postgres
+      - cezar-redis
 networks:
-  cezarzap:
+  cezar:
     driver: bridge
