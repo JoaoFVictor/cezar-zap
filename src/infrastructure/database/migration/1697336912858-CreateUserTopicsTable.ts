@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CreateUserTopicsTable1697336912858 implements MigrationInterface {
   name = 'CreateUserTopicsTable1697336912858';
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
+  async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TABLE user_topics (
                 id serial PRIMARY KEY,
@@ -20,7 +20,7 @@ export class CreateUserTopicsTable1697336912858 implements MigrationInterface {
         `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
+  async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP TABLE user_topics`);
   }
 }

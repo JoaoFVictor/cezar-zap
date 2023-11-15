@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class InsertActionData1697151395196 implements MigrationInterface {
   name = 'InsertActionData1697151395196';
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
+  async up(queryRunner: QueryRunner): Promise<void> {
     // Inserindo algumas ações de exemplo na tabela "actions"
     await queryRunner.query(`
             INSERT INTO actions (description, action_type)
@@ -14,7 +14,7 @@ export class InsertActionData1697151395196 implements MigrationInterface {
         `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
+  async down(queryRunner: QueryRunner): Promise<void> {
     // Removendo as ações inseridas pela função `up` desta migração.
     await queryRunner.query(`
             DELETE FROM actions 

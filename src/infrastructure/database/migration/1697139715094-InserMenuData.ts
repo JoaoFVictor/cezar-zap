@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class InserMenuData1697139715094 implements MigrationInterface {
   name = 'InserMenuData1697139715094';
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
+  async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             INSERT INTO menus (option, title, description)
             VALUES ('main', 'Menu Principal', 'Gestão Financeira')
@@ -39,7 +39,7 @@ export class InserMenuData1697139715094 implements MigrationInterface {
         `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
+  async down(queryRunner: QueryRunner): Promise<void> {
     // Removendo submenus de Despesas
     await queryRunner.query(`
             DELETE FROM menus WHERE option IN ('2.1', '2.2', '2.3', '2.4')

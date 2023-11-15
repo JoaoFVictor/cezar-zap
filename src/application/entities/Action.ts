@@ -15,7 +15,7 @@ export class Action {
   public action_type?: string;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async execute(user: User): Promise<string | void> {
+  async execute(user: User): Promise<string | void> {
     throw new Error('Action not implemented.');
   }
 

@@ -21,7 +21,7 @@ export class UserTopicChatInitAction extends Action {
     );
   }
 
-  public async execute(user: User): Promise<string | void> {
+  async execute(user: User): Promise<string | void> {
     await this.cacheService?.put(
       `user_${user.id}_id_in_topic_chat`,
       true,

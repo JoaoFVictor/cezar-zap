@@ -13,7 +13,7 @@ export class UserRevenueService {
     private cacheService: CacheService
   ) {}
 
-  public async createUserRevenue(
+  async createUserRevenue(
     userRevenue: UserRevenue
   ): Promise<UserRevenue | null> {
     return await this.cacheService.remember(
@@ -25,7 +25,7 @@ export class UserRevenueService {
     );
   }
 
-  public async getUserRevenueState(user: User): Promise<number> {
+  async getUserRevenueState(user: User): Promise<number> {
     return await this.cacheService.remember(
       `user_${user.id}_revenue_state`,
       CacheTimes.ONE_DAY,
@@ -35,7 +35,7 @@ export class UserRevenueService {
     );
   }
 
-  public async setUserRevenueState(
+  async setUserRevenueState(
     user: User,
     userRevenueState: UserRevenueState
   ): Promise<void> {
@@ -46,15 +46,15 @@ export class UserRevenueService {
     );
   }
 
-  public async forgetUserRevenueState(user: User): Promise<void> {
+  async forgetUserRevenueState(user: User): Promise<void> {
     await this.cacheService.forget(`user_${user.id}_revenue_state`);
   }
 
-  public async forgetUserRevenue(user: User): Promise<void> {
+  async forgetUserRevenue(user: User): Promise<void> {
     await this.cacheService.forget(`user_${user.id}_id_in_expensive`);
   }
 
-  public async createTemporaryUserRevenueValue(
+  async createTemporaryUserRevenueValue(
     user: User,
     value: number
   ): Promise<void> {
@@ -65,7 +65,7 @@ export class UserRevenueService {
     );
   }
 
-  public async finalizeUserRevenueCreation(
+  async finalizeUserRevenueCreation(
     user: User,
     description: string
   ): Promise<UserRevenue> {

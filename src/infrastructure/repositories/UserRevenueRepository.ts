@@ -9,9 +9,7 @@ export class UserRevenueRepository extends Repository<UserRevenue> {
     super(UserRevenue, dataSource.createEntityManager());
   }
 
-  public async createUserRevenue(
-    userTopic: UserRevenue
-  ): Promise<UserRevenue | null> {
+  async createUserRevenue(userTopic: UserRevenue): Promise<UserRevenue | null> {
     return await this.save(userTopic);
   }
 }
