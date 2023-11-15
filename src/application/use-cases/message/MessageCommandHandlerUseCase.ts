@@ -27,7 +27,7 @@ export class MessageCommandHandlerUseCase {
         private userRevenueCommandHandlerUseCase: UserRevenueCommandHandlerUseCase
     ) {}
 
-    public async processMessage(phoneNumber: string, content: string): Promise <void> {
+    async execute(phoneNumber: string, content: string): Promise <void> {
         const userRegister = await this.userService.findByPhoneNumber(phoneNumber);
         if (!userRegister) {
             const otp = await this.generateOtpUseCase.execute(phoneNumber);
@@ -48,19 +48,19 @@ export class MessageCommandHandlerUseCase {
         }
 
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_expensive`)) {
-            this.userExpenseCommandHandlerUseCase.processUserExpenseCommand(userRegister, content);
+            this.userExpenseCommandHandlerUseCase.execute(userRegister, content);
             return;
         }
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_revenue`)) {
-            this.userRevenueCommandHandlerUseCase.processUserRevenueCommand(userRegister, content);
+            this.userRevenueCommandHandlerUseCase.execute(userRegister, content);
             return;
         }
         if (await this.cacheService.has(`user_${userRegister.id}_id_in_topic_chat`)) {
-            this.userTopicCommandHandlerUseCase.processUserTopicCommand(userRegister, content);
+            this.userTopicCommandHandlerUseCase.execute(userRegister, content);
             return;
         }
 
-        this.menuCommandHandlerUseCase.processMenuCommand(userRegister, content);
+        this.menuCommandHandlerUseCase.execute(userRegister, content);
     }
 
     private registerMessageReceived(phoneNumber: string, user: User, content: string): void {

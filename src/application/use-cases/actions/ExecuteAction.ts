@@ -13,7 +13,7 @@ export class ExecuteAction {
     public async execute(id: number, user: User): Promise<string | void> {
         const actionData = await this.actionService.findById(id);
         if (!actionData) return;
-        const actionInstance = this.actionFactory.createAction(actionData);
+        const actionInstance = this.actionFactory.execute(actionData);
         return await actionInstance.execute(user);
     }
 }

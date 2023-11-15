@@ -22,7 +22,7 @@ export class WhatsAppBot {
 
         this.client.on('message', async (message) => {
             console.log('Mensagem recebida de', message.from, message.body);
-            await this.messageCommandHandlerUseCase.processMessage(message.from, message.body);
+            await this.messageCommandHandlerUseCase.execute(message.from, message.body);
         });
 
         this.client.on('disconnected', (reason) => {

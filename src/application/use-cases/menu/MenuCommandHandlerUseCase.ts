@@ -3,6 +3,8 @@ import { ExecuteAction } from '../actions/ExecuteAction';
 import { MenuService } from '../../../infrastructure/services/MenuService';
 import { MessageService } from '../../../infrastructure/services/MessageService';
 import { User } from '../../entities/User';
+import { UserMenuInitializeStageUseCase } from './UserMenuInitializeStageUseCase';
+import { UserMenuMessageDisplayUseCase } from './UserMenuMessageDisplayUseCase';
 import { injectable } from 'tsyringe';
 
 @injectable()
@@ -10,13 +12,15 @@ export class MenuCommandHandlerUseCase {
     constructor(
         private executeAction: ExecuteAction,
         private menuService: MenuService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private userMenuInitializeStageUseCase: UserMenuInitializeStageUseCase,
+        private userMenuMessageDisplayUseCase: UserMenuMessageDisplayUseCase
     ) {}
 
-    async processMenuCommand(user: User, command: string): Promise<void> {
+    async execute(user: User, command: string): Promise<void> {
         const userMenuStage = await this.menuService.getUserMenuStage(user);
         if (!userMenuStage) {
-            await this.initializeUserMenuStage(user);
+            await this.userMenuInitializeStageUseCase.execute(user);
             return;
         }
 
@@ -25,26 +29,12 @@ export class MenuCommandHandlerUseCase {
                 await this.goBack( user);
                 break;
             case Commands.RESTART:
-                await this.initializeUserMenuStage(user);
+                await this.userMenuInitializeStageUseCase.execute(user);
                 break;
             default:
                 await this.processSelectedOption(user, command);
                 break;
         }
-    }
-
-    public async initializeUserMenuStage(user: User): Promise<void> {
-        const userMainMenu = await this.menuService.getMainMenu();
-        if (!userMainMenu) {
-            throw new Error('Main menu not found in the database.');
-        }
-
-        const userMenuStage = {
-            currentMenu: userMainMenu,
-            menuStack: []
-        };
-        await this.menuService.setUserMenuStage(user, userMenuStage);
-        await this.displayMenu(user);
     }
 
     private async goBack(user: User): Promise<void> {
@@ -58,7 +48,7 @@ export class MenuCommandHandlerUseCase {
             this.menuService.setUserMenuStage(user, userMenuStage);
         }
 
-        await this.displayMenu(user);
+        await this.userMenuMessageDisplayUseCase.execute(user);
     }
 
     private async processSelectedOption(user: User, command: string): Promise<void> {
@@ -79,7 +69,7 @@ export class MenuCommandHandlerUseCase {
         if (option.children?.length) {
             userMenuStage.currentMenu = option;
             await this.menuService.setUserMenuStage(user, userMenuStage);
-            await this.displayMenu(user);
+            await this.userMenuMessageDisplayUseCase.execute(user);
 
             if (option.action) {
                 const response = await this.executeAction.execute(option.action.id, user);
@@ -98,17 +88,5 @@ export class MenuCommandHandlerUseCase {
                 await this.messageService.sendMessage(user.phone_number, response, true);
             }
         }
-    }
-
-    private async displayMenu(user:User): Promise<void> {
-        const userMenuStage = await this.menuService.getUserMenuStage(user);
-        if (!userMenuStage) {
-            throw new Error('Menu stage not found.');
-        }
-
-        let response = `${userMenuStage.currentMenu.title}\n${userMenuStage.currentMenu.description}\n\n`;
-        userMenuStage.currentMenu.children?.forEach(option => response += `🔹 ${option.option}. ${option.title}\n`);
-
-        await this.messageService.sendMessage(user.phone_number, response.trim(), true);
     }
 }

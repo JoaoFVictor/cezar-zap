@@ -4,20 +4,19 @@ import { Action } from "../../entities/Action";
 import { CacheService } from "../../../infrastructure/cache/CacheService";
 import { CacheTimes } from "../../../config/CacheTimes";
 import { User } from "../../entities/User";
-import { UserExpenseCommandHandlerUseCase } from "./UserExpenseCommandHandlerUseCase";
+import { UserExpenseInitializeStageUseCase } from "../user-expense/UserExpenseInitializeStageUseCase";
 
 @injectable()
-export class UserExpenseInitUseCase extends Action {
-    private userExpenseCommandHandlerUseCase: UserExpenseCommandHandlerUseCase;
+export class UserExpenseInitAction extends Action {
+    private userExpenseInitializeStageUseCase: UserExpenseInitializeStageUseCase;
 
-    constructor(description: string, action_type?: string, cacheService?: CacheService | null)
-    {
+    constructor(description: string, action_type?: string, cacheService?: CacheService | null) {
         super(description, action_type, cacheService);
-        this.userExpenseCommandHandlerUseCase = container.resolve(UserExpenseCommandHandlerUseCase);
+        this.userExpenseInitializeStageUseCase = container.resolve(UserExpenseInitializeStageUseCase);
     }
 
     public async execute(user: User): Promise<string | void> {
         await this.cacheService?.put(`user_${user.id}_id_in_expensive`, true, CacheTimes.ONE_DAY);
-        await this.userExpenseCommandHandlerUseCase.initializeUserExpenseStage(user);
+        await this.userExpenseInitializeStageUseCase.execute(user);
     }
 }

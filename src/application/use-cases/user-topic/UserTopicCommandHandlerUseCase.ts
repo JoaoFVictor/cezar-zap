@@ -1,29 +1,33 @@
-import { container, injectable } from 'tsyringe';
-
 import { ActionService } from '../../../infrastructure/services/ActionService';
 import Actions from '../../entities/enums/ActionsEnum';
-import Commands from '../../entities/enums/CommandsEnum';
+import CommandsEnum from '../../entities/enums/CommandsEnum';
 import { ExecuteAction } from '../actions/ExecuteAction';
-import { MenuCommandHandlerUseCase } from '../menu/MenuCommandHandlerUseCase';
 import { MessageService } from '../../../infrastructure/services/MessageService';
 import { User } from '../../entities/User';
+import { UserMenuInitializeStageUseCase } from '../menu/UserMenuInitializeStageUseCase';
 import { UserTopic } from '../../entities/UserTopic';
+import { UserTopicInitializeStageUseCase } from './UserTopicInitializeStageUseCase';
+import { UserTopicMessageDisplayUseCase } from './UserTopicMessageDisplayUseCase';
+import { UserTopicPromptCreateTopicUseCase } from './UserTopicPromptCreateTopicUseCase';
 import { UserTopicService } from '../../../infrastructure/services/UserTopicService';
 import UserTopicState from '../../entities/enums/UserTopicStateEnum';
+import { injectable } from 'tsyringe';
 
 @injectable()
 export class UserTopicCommandHandlerUseCase {
-    private menuCommandHandlerUseCase: MenuCommandHandlerUseCase;
-    private executeAction: ExecuteAction;
-    private actionService: ActionService;
 
-    constructor(private userTopicService: UserTopicService, private messageService: MessageService) {
-        this.menuCommandHandlerUseCase = container.resolve(MenuCommandHandlerUseCase);
-        this.executeAction = container.resolve(ExecuteAction);
-        this.actionService = container.resolve(ActionService);
-    }
+    constructor(
+        private userTopicService: UserTopicService,
+        private messageService: MessageService,
+        private actionService: ActionService,
+        private executeAction: ExecuteAction,
+        private userMenuInitializeStageUseCase: UserMenuInitializeStageUseCase,
+        private userTopicMessageDisplayUseCase: UserTopicMessageDisplayUseCase,
+        private userTopicPromptCreateTopicUseCase: UserTopicPromptCreateTopicUseCase,
+        private userTopicInitializeStageUseCase: UserTopicInitializeStageUseCase
+    ) {}
 
-    async processUserTopicCommand(user: User, command: string): Promise<void> {
+    async execute(user: User, command: string): Promise<void> {
         const userTopicState = await this.userTopicService.getUserTopicState(user);
         switch (userTopicState) {
             case UserTopicState.AWAITING_TOPIC_TITLE:
@@ -44,26 +48,11 @@ export class UserTopicCommandHandlerUseCase {
         }
     }
 
-    public async initializeUserTopicStage(user: User): Promise<void> {
-        const topLevelUserTopics = await this.userTopicService.getMainUserTopics(user);
-        const userTopicStage = {
-            topLevelUserTopics: topLevelUserTopics,
-            currentUserTopic: topLevelUserTopics.length > 0 ? topLevelUserTopics[0] : null,
-            userTopicStack: []
-        };
-        await this.userTopicService.setUserTopicStage(user, userTopicStage);
-        if (!userTopicStage.currentUserTopic) {
-            await this.promptUserToCreateTopic(user);
-            return;
-        }
-        await this.displayUserTopic(user);
-    }
-
     private async handleTopicTitleInput(user: User, title: string): Promise<void> {
         const userTopic = new UserTopic(title, 'temp');
         await this.userTopicService.setTemporaryUserTopic(user, userTopic);
         await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_OPTION);
-        await this.messageService.sendMessage(user.phone_number, `Insira a opção para o seu tópico:`, true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+        await this.messageService.sendMessage(user.phone_number, `Insira a opção para o seu tópico:`, true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
     }
 
     private async handleTopicOptionInput(user: User, option: string): Promise<void> {
@@ -85,43 +74,43 @@ export class UserTopicCommandHandlerUseCase {
 
         const action = option == Actions.REVENUE ? await this.actionService.findByType('user-revenue-init') : await this.actionService.findByType('user-expense-init');
         if (!action) {
-            await this.messageService.sendMessage(user.phone_number, `Insira uma opção valida.`, true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+            await this.messageService.sendMessage(user.phone_number, `Insira uma opção valida.`, true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
             return;
         }
 
         userTopic.action = action;
         await this.userTopicService.setTemporaryUserTopic(user, userTopic);
         await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_DESCRIPTION);
-        await this.messageService.sendMessage(user.phone_number, `Insira uma descrição para o seu tópico (ou digite '${Commands.SKIP}' se quiser pular a descrição):`, true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+        await this.messageService.sendMessage(user.phone_number, `Insira uma descrição para o seu tópico (ou digite '${CommandsEnum.SKIP}' se quiser pular a descrição):`, true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
     }
 
     private async handleTopicDescriptionInput(user: User, description: string): Promise<void> {
-        if (description.toUpperCase() === Commands.SKIP) {
+        if (description.toUpperCase() === CommandsEnum.SKIP) {
             description = "";
         }
         const topic = await this.userTopicService.finalizeTopicCreation(user, description);
         await this.userTopicService.setUserTopicState(user, UserTopicState.DEFAULT);
-        await this.messageService.sendMessage(user.phone_number, `Seu tópico "${topic.title}" foi criado!`, true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
-        await this.initializeUserTopicStage(user);
+        await this.messageService.sendMessage(user.phone_number, `Seu tópico "${topic.title}" foi criado!`, true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
+        await this.userTopicInitializeStageUseCase.execute(user);
     }
 
     private async handleOtherCommands(user: User, command: string): Promise<void> {
         const userTopicStage = await this.userTopicService.getUserTopicStage(user);
         if (!userTopicStage) {
-            await this.initializeUserTopicStage(user);
+            await this.userTopicInitializeStageUseCase.execute(user);
             return;
         }
 
         switch (command.toUpperCase()) {
-            case Commands.BACK:
+            case CommandsEnum.BACK:
                 await this.goBack(user);
                 break;
-            case Commands.RESTART:
-                await this.initializeUserTopicStage(user);
-                await this.menuCommandHandlerUseCase.initializeUserMenuStage(user);
+            case CommandsEnum.RESTART:
+                await this.userTopicInitializeStageUseCase.execute(user);
+                await this.userMenuInitializeStageUseCase.execute(user);
                 break;
-            case Commands.CREATE:
-                await this.promptUserToCreateTopic(user);
+            case CommandsEnum.CREATE:
+                await this.userTopicPromptCreateTopicUseCase.execute(user);
                 break;
             default:
                 await this.processSelectedOption(user, command);
@@ -129,26 +118,21 @@ export class UserTopicCommandHandlerUseCase {
         }
     }
 
-    private async promptUserToCreateTopic(user: User): Promise<void> {
-        await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_TITLE);
-        await this.messageService.sendMessage(user.phone_number, 'Por favor, insira um título para o seu novo tópico:', true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
-    }
-
     private async goBack(user: User): Promise<void> {
         const userTopicStage = await this.userTopicService.getUserTopicStage(user);
         if (!userTopicStage || userTopicStage.userTopicStack.length === 0) {
-            await this.messageService.sendMessage(user.phone_number, 'Você já está no início.', true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+            await this.messageService.sendMessage(user.phone_number, 'Você já está no início.', true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
             return;
         }
         userTopicStage.currentUserTopic = userTopicStage.userTopicStack.pop()!;
         await this.userTopicService.setUserTopicStage(user, userTopicStage);
-        await this.displayUserTopic(user);
+        await this.userTopicMessageDisplayUseCase.execute(user);
     }
 
     private async processSelectedOption(user: User, command: string): Promise<void> {
         const userTopicStage = await this.userTopicService.getUserTopicStage(user);
         if (!userTopicStage) {
-            await this.messageService.sendMessage(user.phone_number, 'Opção inválida. Selecione uma opção válida.', true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+            await this.messageService.sendMessage(user.phone_number, 'Opção inválida. Selecione uma opção válida.', true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
             return;
         }
 
@@ -157,32 +141,20 @@ export class UserTopicCommandHandlerUseCase {
             : await this.userTopicService.findChildTopicByOption(user, userTopicStage.currentUserTopic!, command);
 
         if (!selectedTopic) {
-            await this.messageService.sendMessage(user.phone_number, 'Opção inválida. Selecione uma opção válida.', true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+            await this.messageService.sendMessage(user.phone_number, 'Opção inválida. Selecione uma opção válida.', true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
             return;
         }
 
         userTopicStage.userTopicStack.push(userTopicStage.currentUserTopic!);
         userTopicStage.currentUserTopic = selectedTopic;
         await this.userTopicService.setUserTopicStage(user, userTopicStage);
-        await this.displayUserTopic(user);
+        await this.userTopicMessageDisplayUseCase.execute(user);
 
         if (!selectedTopic.action) return;
 
         const actionResponse = await this.executeAction.execute(selectedTopic.action.id, user);
         if (actionResponse) {
-            await this.messageService.sendMessage(user.phone_number, actionResponse, true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
+            await this.messageService.sendMessage(user.phone_number, actionResponse, true, `Escreva ${CommandsEnum.CREATE} para criar um novo tópico`);
         }
-    }
-
-    public async displayUserTopic(user: User): Promise<void> {
-        const userTopicStage = await this.userTopicService.getUserTopicStage(user);
-        if (!userTopicStage) return;
-
-        const response = userTopicStage.userTopicStack.length === 0
-            ? userTopicStage.topLevelUserTopics.map(topic => `${topic.option} - ${topic.title}`).join('\n')
-            : `${userTopicStage.currentUserTopic!.title}\n${userTopicStage.currentUserTopic!.description}\n\n` + 
-              userTopicStage.currentUserTopic!.children?.map(child => `- ${child.option}. ${child.title}`).join('\n');
-
-        await this.messageService.sendMessage(user.phone_number, response.trim(), true, `Escreva ${Commands.CREATE} para criar um novo tópico`);
     }
 }
