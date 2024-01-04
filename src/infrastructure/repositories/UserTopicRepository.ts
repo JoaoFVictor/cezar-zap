@@ -28,10 +28,7 @@ export class UserTopicRepository extends Repository<UserTopic> {
     });
   }
 
-  async findTopLevelTopicByOption(
-    user: User,
-    option: string
-  ): Promise<UserTopic | null> {
+  async findTopLevelTopicByOption(user: User, option: string): Promise<UserTopic | null> {
     return this.findOne({
       where: {
         user: user,
@@ -42,11 +39,7 @@ export class UserTopicRepository extends Repository<UserTopic> {
     });
   }
 
-  async findChildTopicByOption(
-    user: User,
-    parentTopic: UserTopic,
-    option: string
-  ): Promise<UserTopic | null> {
+  async findChildTopicByOption(user: User, parentTopic: UserTopic, option: string): Promise<UserTopic | null> {
     return this.findOne({
       where: {
         user: user,

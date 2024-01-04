@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { CacheService } from '../../infrastructure/cache/CacheService';
 import { User } from './User';
@@ -14,6 +14,15 @@ export class Action {
   @Column({ nullable: true })
   public action_type?: string;
 
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date = new Date();
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date = new Date();
+
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at?: Date;
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(user: User): Promise<string | void> {
     throw new Error('Action not implemented.');
@@ -21,14 +30,9 @@ export class Action {
 
   protected cacheService: CacheService | null;
 
-  constructor(
-    description: string,
-    action_type?: string,
-    cacheService?: CacheService | null
-  ) {
+  constructor(description: string, action_type?: string, cacheService?: CacheService | null) {
     this.description = description;
     this.action_type = action_type;
     this.cacheService = cacheService ?? null;
-    console.log(action_type);
   }
 }

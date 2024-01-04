@@ -37,25 +37,17 @@ export class MessageCommandHandlerUseCase {
     }
 
     this.registerMessageReceived(phoneNumber, userRegister, content);
-    const isTokenValid = userRegister.token
-      ? await this.refreshTokenUseCase.execute(userRegister.token)
-      : false;
+    const isTokenValid = userRegister.token ? await this.refreshTokenUseCase.execute(userRegister.token) : false;
     if (!isTokenValid) {
-      const { isAuthenticated } = await this.authenticateUserUseCase.execute(
-        phoneNumber,
-        content
-      );
+      const { isAuthenticated } = await this.authenticateUserUseCase.execute(phoneNumber, content);
       if (!isAuthenticated) {
-        const response =
-          'Você não está autenticado, informe seu codigo de autenticação.';
+        const response = 'Você não está autenticado, informe seu codigo de autenticação.';
         this.messageService.sendMessage(phoneNumber, response);
         return;
       }
     }
 
-    if (
-      await this.cacheService.has(`user_${userRegister.id}_id_in_expensive`)
-    ) {
+    if (await this.cacheService.has(`user_${userRegister.id}_id_in_expensive`)) {
       this.userExpenseCommandHandlerUseCase.execute(userRegister, content);
       return;
     }
@@ -63,9 +55,15 @@ export class MessageCommandHandlerUseCase {
       this.userRevenueCommandHandlerUseCase.execute(userRegister, content);
       return;
     }
-    if (
-      await this.cacheService.has(`user_${userRegister.id}_id_in_topic_chat`)
-    ) {
+    if (await this.cacheService.has(`user_${userRegister.id}_id_in_get_expensive_data`)) {
+      this.userExpenseCommandHandlerUseCase.execute(userRegister, content);
+      return;
+    }
+    if (await this.cacheService.has(`user_${userRegister.id}_id_in_get_revenue_data`)) {
+      this.userRevenueCommandHandlerUseCase.execute(userRegister, content);
+      return;
+    }
+    if (await this.cacheService.has(`user_${userRegister.id}_id_in_topic_chat`)) {
       this.userTopicCommandHandlerUseCase.execute(userRegister, content);
       return;
     }
@@ -73,11 +71,7 @@ export class MessageCommandHandlerUseCase {
     this.menuCommandHandlerUseCase.execute(userRegister, content);
   }
 
-  private registerMessageReceived(
-    phoneNumber: string,
-    user: User,
-    content: string
-  ): void {
+  private registerMessageReceived(phoneNumber: string, user: User, content: string): void {
     const messageReceived = new Message(phoneNumber, user, content);
     this.messageService.createMessage(messageReceived);
   }

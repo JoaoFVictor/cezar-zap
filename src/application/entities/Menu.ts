@@ -1,10 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { Action } from './Action';
@@ -35,13 +38,16 @@ export class Menu {
   @JoinColumn({ name: 'parent_id' })
   public parent?: Menu;
 
-  constructor(
-    option: string,
-    title: string,
-    description?: string,
-    action?: Action,
-    children?: Menu[]
-  ) {
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date = new Date();
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date = new Date();
+
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at?: Date;
+
+  constructor(option: string, title: string, description?: string, action?: Action, children?: Menu[]) {
     this.option = option;
     this.title = title;
     this.description = description;

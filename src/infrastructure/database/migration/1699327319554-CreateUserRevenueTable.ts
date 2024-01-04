@@ -7,7 +7,10 @@ export class CreateUserRevenueTable1699327319554 implements MigrationInterface {
                 id serial PRIMARY KEY,
                 value decimal NOT NULL,
                 description character varying,
-                user_id integer REFERENCES users(id)
+                user_id integer REFERENCES users(id),
+                created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at timestamp NULL
             )
         `);
   }

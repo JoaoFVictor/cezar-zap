@@ -17,10 +17,7 @@ export class UserExpenseInitializeStageUseCase {
     currentUserTopic: UserTopic;
     userTopicStack: UserTopic[];
   } | void> {
-    await this.userExpenseService.setUserExpenseState(
-      user,
-      UserExpenseState.AWAITING_EXPENSE_VALUE
-    );
+    await this.userExpenseService.setUserExpenseState(user, UserExpenseState.AWAITING_EXPENSE_VALUE);
     await this.messageService.sendMessage(
       user.phone_number,
       'Por favor o valor da despesa:',

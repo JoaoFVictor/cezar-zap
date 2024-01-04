@@ -9,10 +9,7 @@ export class AuthenticateUserUseCase {
     private tokenService: TokenService
   ) {}
 
-  async execute(
-    phoneNumber: string,
-    otp: string
-  ): Promise<{ isAuthenticated: boolean; token?: string }> {
+  async execute(phoneNumber: string, otp: string): Promise<{ isAuthenticated: boolean; token?: string }> {
     const user = await this.userService.findByPhoneNumber(phoneNumber);
     if (user && user.otp === otp) {
       user.is_authenticated = true;

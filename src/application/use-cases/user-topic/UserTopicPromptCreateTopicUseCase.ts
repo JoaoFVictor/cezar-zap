@@ -13,10 +13,7 @@ export class UserTopicPromptCreateTopicUseCase {
   ) {}
 
   async execute(user: User): Promise<void> {
-    await this.userTopicService.setUserTopicState(
-      user,
-      UserTopicStateEnum.AWAITING_TOPIC_TITLE
-    );
+    await this.userTopicService.setUserTopicState(user, UserTopicStateEnum.AWAITING_TOPIC_TITLE);
     await this.messageService.sendMessage(
       user.phone_number,
       'Por favor, insira um título para o seu novo tópico:',

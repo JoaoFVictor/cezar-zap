@@ -26,8 +26,7 @@ export class UserRevenueCommandHandlerUseCase {
         return;
     }
 
-    const userRevenueState =
-      await this.userRevenueService.getUserRevenueState(user);
+    const userRevenueState = await this.userRevenueService.getUserRevenueState(user);
     switch (userRevenueState) {
       case UserRevenueState.DEFAULT:
         await this.userRevenueInitializeStageUseCase.execute(user);
@@ -41,14 +40,8 @@ export class UserRevenueCommandHandlerUseCase {
     }
   }
 
-  private async handleRevenueValueCreation(
-    user: User,
-    value: number
-  ): Promise<void> {
-    await this.userRevenueService.setUserRevenueState(
-      user,
-      UserRevenueState.AWAITING_REVENUE_DESCRIPTION
-    );
+  private async handleRevenueValueCreation(user: User, value: number): Promise<void> {
+    await this.userRevenueService.setUserRevenueState(user, UserRevenueState.AWAITING_REVENUE_DESCRIPTION);
     await this.userRevenueService.createTemporaryUserRevenueValue(user, value);
     await this.messageService.sendMessage(
       user.phone_number,
@@ -58,18 +51,12 @@ export class UserRevenueCommandHandlerUseCase {
     );
   }
 
-  private async handleExpenseCreation(
-    user: User,
-    description: string
-  ): Promise<void> {
+  private async handleExpenseCreation(user: User, description: string): Promise<void> {
     if (description === Commands.SKIP) {
       description = '';
     }
 
-    await this.userRevenueService.finalizeUserRevenueCreation(
-      user,
-      description
-    );
+    await this.userRevenueService.finalizeUserRevenueCreation(user, description);
     await this.messageService.sendMessage(
       user.phone_number,
       'Sua receita foi criada!',

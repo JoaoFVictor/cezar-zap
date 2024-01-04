@@ -47,16 +47,10 @@ export class UserTopicCommandHandlerUseCase {
     }
   }
 
-  private async handleTopicTitleInput(
-    user: User,
-    title: string
-  ): Promise<void> {
+  private async handleTopicTitleInput(user: User, title: string): Promise<void> {
     const userTopic = new UserTopic(title, 'temp');
     await this.userTopicService.setTemporaryUserTopic(user, userTopic);
-    await this.userTopicService.setUserTopicState(
-      user,
-      UserTopicState.AWAITING_TOPIC_OPTION
-    );
+    await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_OPTION);
     await this.messageService.sendMessage(
       user.phone_number,
       `Insira a opção para o seu tópico:`,
@@ -65,30 +59,21 @@ export class UserTopicCommandHandlerUseCase {
     );
   }
 
-  private async handleTopicOptionInput(
-    user: User,
-    option: string
-  ): Promise<void> {
+  private async handleTopicOptionInput(user: User, option: string): Promise<void> {
     const userTopic = await this.userTopicService.getTemporaryUserTopic(user);
     if (!userTopic) {
       throw new Error('Temporary user topic not found.');
     }
     userTopic.option = option;
     await this.userTopicService.setTemporaryUserTopic(user, userTopic);
-    await this.userTopicService.setUserTopicState(
-      user,
-      UserTopicState.AWAITING_TOPIC_ACTION
-    );
+    await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_ACTION);
     await this.messageService.sendMessage(
       user.phone_number,
       `Seu tópico vai ser de despesa ou receita? (Escreva '${Actions.REVENUE}' para despesa ou '${Actions.EXPENSE}' para receita)`
     );
   }
 
-  private async handleTopicActionInput(
-    user: User,
-    option: string
-  ): Promise<void> {
+  private async handleTopicActionInput(user: User, option: string): Promise<void> {
     const userTopic = await this.userTopicService.getTemporaryUserTopic(user);
     if (!userTopic) {
       throw new Error('Temporary user topic not found.');
@@ -110,10 +95,7 @@ export class UserTopicCommandHandlerUseCase {
 
     userTopic.action = action;
     await this.userTopicService.setTemporaryUserTopic(user, userTopic);
-    await this.userTopicService.setUserTopicState(
-      user,
-      UserTopicState.AWAITING_TOPIC_DESCRIPTION
-    );
+    await this.userTopicService.setUserTopicState(user, UserTopicState.AWAITING_TOPIC_DESCRIPTION);
     await this.messageService.sendMessage(
       user.phone_number,
       `Insira uma descrição para o seu tópico (ou digite '${CommandsEnum.SKIP}' se quiser pular a descrição):`,
@@ -122,17 +104,11 @@ export class UserTopicCommandHandlerUseCase {
     );
   }
 
-  private async handleTopicDescriptionInput(
-    user: User,
-    description: string
-  ): Promise<void> {
+  private async handleTopicDescriptionInput(user: User, description: string): Promise<void> {
     if (description.toUpperCase() === CommandsEnum.SKIP) {
       description = '';
     }
-    const topic = await this.userTopicService.finalizeTopicCreation(
-      user,
-      description
-    );
+    const topic = await this.userTopicService.finalizeTopicCreation(user, description);
     await this.userTopicService.setUserTopicState(user, UserTopicState.DEFAULT);
     await this.messageService.sendMessage(
       user.phone_number,
@@ -143,10 +119,7 @@ export class UserTopicCommandHandlerUseCase {
     await this.userTopicInitializeStageUseCase.execute(user);
   }
 
-  private async handleOtherCommands(
-    user: User,
-    command: string
-  ): Promise<void> {
+  private async handleOtherCommands(user: User, command: string): Promise<void> {
     const userTopicStage = await this.userTopicService.getUserTopicStage(user);
     if (!userTopicStage) {
       await this.userTopicInitializeStageUseCase.execute(user);
@@ -186,10 +159,7 @@ export class UserTopicCommandHandlerUseCase {
     await this.userTopicMessageDisplayUseCase.execute(user);
   }
 
-  private async processSelectedOption(
-    user: User,
-    command: string
-  ): Promise<void> {
+  private async processSelectedOption(user: User, command: string): Promise<void> {
     const userTopicStage = await this.userTopicService.getUserTopicStage(user);
     if (!userTopicStage) {
       await this.messageService.sendMessage(
@@ -204,11 +174,7 @@ export class UserTopicCommandHandlerUseCase {
     const selectedTopic =
       userTopicStage.userTopicStack.length === 0
         ? await this.userTopicService.findTopLevelTopicByOption(user, command)
-        : await this.userTopicService.findChildTopicByOption(
-            user,
-            userTopicStage.currentUserTopic!,
-            command
-          );
+        : await this.userTopicService.findChildTopicByOption(user, userTopicStage.currentUserTopic!, command);
 
     if (!selectedTopic) {
       await this.messageService.sendMessage(
@@ -227,10 +193,7 @@ export class UserTopicCommandHandlerUseCase {
 
     if (!selectedTopic.action) return;
 
-    const actionResponse = await this.executeAction.execute(
-      selectedTopic.action.id,
-      user
-    );
+    const actionResponse = await this.executeAction.execute(selectedTopic.action.id, user);
     if (actionResponse) {
       await this.messageService.sendMessage(
         user.phone_number,

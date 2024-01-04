@@ -1,10 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { Action } from './Action';
@@ -39,6 +42,15 @@ export class UserTopic {
   @ManyToOne(() => UserTopic)
   @JoinColumn({ name: 'parent_id' })
   public parent?: UserTopic;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date = new Date();
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date = new Date();
+
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at?: Date;
 
   constructor(
     title: string,

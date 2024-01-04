@@ -13,12 +13,10 @@ export class UserTopicInitializeStageUseCase {
   ) {}
 
   async execute(user: User): Promise<void> {
-    const topLevelUserTopics =
-      await this.userTopicService.getMainUserTopics(user);
+    const topLevelUserTopics = await this.userTopicService.getMainUserTopics(user);
     const userTopicStage = {
       topLevelUserTopics: topLevelUserTopics,
-      currentUserTopic:
-        topLevelUserTopics.length > 0 ? topLevelUserTopics[0] : null,
+      currentUserTopic: topLevelUserTopics.length > 0 ? topLevelUserTopics[0] : null,
       userTopicStack: [],
     };
     await this.userTopicService.setUserTopicStage(user, userTopicStage);

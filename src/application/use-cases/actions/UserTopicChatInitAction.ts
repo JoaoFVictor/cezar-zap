@@ -10,23 +10,13 @@ import { UserTopicInitializeStageUseCase } from '../user-topic/UserTopicInitiali
 export class UserTopicChatInitAction extends Action {
   private userTopicInitializeStageUseCase: UserTopicInitializeStageUseCase;
 
-  constructor(
-    description: string,
-    action_type?: string,
-    cacheService?: CacheService | null
-  ) {
+  constructor(description: string, action_type?: string, cacheService?: CacheService | null) {
     super(description, action_type, cacheService);
-    this.userTopicInitializeStageUseCase = container.resolve(
-      UserTopicInitializeStageUseCase
-    );
+    this.userTopicInitializeStageUseCase = container.resolve(UserTopicInitializeStageUseCase);
   }
 
   async execute(user: User): Promise<string | void> {
-    await this.cacheService?.put(
-      `user_${user.id}_id_in_topic_chat`,
-      true,
-      CacheTimes.ONE_DAY
-    );
+    await this.cacheService?.put(`user_${user.id}_id_in_topic_chat`, true, CacheTimes.ONE_DAY);
     await this.userTopicInitializeStageUseCase.execute(user);
   }
 }

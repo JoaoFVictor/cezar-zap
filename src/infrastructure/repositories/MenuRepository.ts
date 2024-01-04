@@ -16,10 +16,7 @@ export class MenuRepository extends Repository<Menu> {
     });
   }
 
-  async findByOptionAndParentMenuId(
-    option: string,
-    id: string
-  ): Promise<Menu | null> {
+  async findByOptionAndParentMenuId(option: string, id: string): Promise<Menu | null> {
     return await this.findOne({
       where: { parent: { id: id }, option: option },
       relations: ['children', 'action'],

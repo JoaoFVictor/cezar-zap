@@ -13,9 +13,7 @@ export class UserExpenseService {
     private cacheService: CacheService
   ) {}
 
-  async createUserExpense(
-    userExpense: UserExpense
-  ): Promise<UserExpense | null> {
+  async createUserExpense(userExpense: UserExpense): Promise<UserExpense | null> {
     return await this.cacheService.remember(
       `get_user_expense_by_id_${userExpense.id}`,
       CacheTimes.ONE_DAY,
@@ -26,24 +24,13 @@ export class UserExpenseService {
   }
 
   async getUserExpenseState(user: User): Promise<number> {
-    return await this.cacheService.remember(
-      `user_${user.id}_expense_state`,
-      CacheTimes.ONE_DAY,
-      async () => {
-        return UserExpenseState.DEFAULT;
-      }
-    );
+    return await this.cacheService.remember(`user_${user.id}_expense_state`, CacheTimes.ONE_DAY, async () => {
+      return UserExpenseState.DEFAULT;
+    });
   }
 
-  async setUserExpenseState(
-    user: User,
-    userExpenseState: UserExpenseState
-  ): Promise<void> {
-    await this.cacheService.put(
-      `user_${user.id}_expense_state`,
-      userExpenseState,
-      CacheTimes.THIRTY_MINUTES
-    );
+  async setUserExpenseState(user: User, userExpenseState: UserExpenseState): Promise<void> {
+    await this.cacheService.put(`user_${user.id}_expense_state`, userExpenseState, CacheTimes.THIRTY_MINUTES);
   }
 
   async forgetUserExpenseState(user: User): Promise<void> {
@@ -54,24 +41,12 @@ export class UserExpenseService {
     await this.cacheService.forget(`user_${user.id}_id_in_expensive`);
   }
 
-  async createTemporaryUserExpenseValue(
-    user: User,
-    value: number
-  ): Promise<void> {
-    await this.cacheService.put(
-      `temporary_user_expense_value_for_user_${user.id}`,
-      value,
-      CacheTimes.THIRTY_MINUTES
-    );
+  async createTemporaryUserExpenseValue(user: User, value: number): Promise<void> {
+    await this.cacheService.put(`temporary_user_expense_value_for_user_${user.id}`, value, CacheTimes.THIRTY_MINUTES);
   }
 
-  async finalizeUserExpenseCreation(
-    user: User,
-    description: string
-  ): Promise<UserExpense> {
-    const temporaryValue = await this.cacheService.get<number>(
-      `temporary_user_expense_value_for_user_${user.id}`
-    );
+  async finalizeUserExpenseCreation(user: User, description: string): Promise<UserExpense> {
+    const temporaryValue = await this.cacheService.get<number>(`temporary_user_expense_value_for_user_${user.id}`);
     if (!temporaryValue) {
       throw new Error('Temporary user expense value not found.');
     }
@@ -79,9 +54,7 @@ export class UserExpenseService {
     const newUserExpense = new UserExpense(temporaryValue, user, description);
 
     const createdUserExpense = await this.createUserExpense(newUserExpense);
-    await this.cacheService.forget(
-      `temporary_user_expense_value_for_user_${user.id}`
-    );
+    await this.cacheService.forget(`temporary_user_expense_value_for_user_${user.id}`);
     await this.forgetUserExpenseState(user);
 
     if (!createdUserExpense) {

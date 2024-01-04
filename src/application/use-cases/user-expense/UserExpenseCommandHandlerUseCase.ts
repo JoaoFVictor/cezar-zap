@@ -26,8 +26,7 @@ export class UserExpenseCommandHandlerUseCase {
         return;
     }
 
-    const userExpenseState =
-      await this.userExpenseService.getUserExpenseState(user);
+    const userExpenseState = await this.userExpenseService.getUserExpenseState(user);
     switch (userExpenseState) {
       case UserExpenseState.DEFAULT:
         await this.userExpenseInitializeStageUseCase.execute(user);
@@ -41,14 +40,8 @@ export class UserExpenseCommandHandlerUseCase {
     }
   }
 
-  private async handleExpenseValueCreation(
-    user: User,
-    value: number
-  ): Promise<void> {
-    await this.userExpenseService.setUserExpenseState(
-      user,
-      UserExpenseState.AWAITING_EXPENSE_DESCRIPTION
-    );
+  private async handleExpenseValueCreation(user: User, value: number): Promise<void> {
+    await this.userExpenseService.setUserExpenseState(user, UserExpenseState.AWAITING_EXPENSE_DESCRIPTION);
     await this.userExpenseService.createTemporaryUserExpenseValue(user, value);
     await this.messageService.sendMessage(
       user.phone_number,
@@ -58,18 +51,12 @@ export class UserExpenseCommandHandlerUseCase {
     );
   }
 
-  private async handleExpenseCreation(
-    user: User,
-    description: string
-  ): Promise<void> {
+  private async handleExpenseCreation(user: User, description: string): Promise<void> {
     if (description === Commands.SKIP) {
       description = '';
     }
 
-    await this.userExpenseService.finalizeUserExpenseCreation(
-      user,
-      description
-    );
+    await this.userExpenseService.finalizeUserExpenseCreation(user, description);
     await this.messageService.sendMessage(
       user.phone_number,
       'Sua despesa foi criada!',

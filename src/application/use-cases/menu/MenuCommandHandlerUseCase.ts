@@ -51,10 +51,7 @@ export class MenuCommandHandlerUseCase {
     await this.userMenuMessageDisplayUseCase.execute(user);
   }
 
-  private async processSelectedOption(
-    user: User,
-    command: string
-  ): Promise<void> {
+  private async processSelectedOption(user: User, command: string): Promise<void> {
     const userMenuStage = await this.menuService.getUserMenuStage(user);
     if (!userMenuStage) {
       throw new Error('Menu stage not found.');
@@ -63,10 +60,7 @@ export class MenuCommandHandlerUseCase {
     userMenuStage.menuStack.push(userMenuStage.currentMenu);
     await this.menuService.setUserMenuStage(user, userMenuStage);
 
-    const option = await this.menuService.findByOptionAndParentMenuId(
-      command,
-      userMenuStage.currentMenu.id
-    );
+    const option = await this.menuService.findByOptionAndParentMenuId(command, userMenuStage.currentMenu.id);
     if (!option) {
       await this.messageService.sendMessage(
         user.phone_number,
@@ -82,16 +76,9 @@ export class MenuCommandHandlerUseCase {
       await this.userMenuMessageDisplayUseCase.execute(user);
 
       if (option.action) {
-        const response = await this.executeAction.execute(
-          option.action.id,
-          user
-        );
+        const response = await this.executeAction.execute(option.action.id, user);
         if (response) {
-          await this.messageService.sendMessage(
-            user.phone_number,
-            response,
-            true
-          );
+          await this.messageService.sendMessage(user.phone_number, response, true);
         }
       }
       return;
@@ -102,11 +89,7 @@ export class MenuCommandHandlerUseCase {
     if (option.action) {
       const response = await this.executeAction.execute(option.action.id, user);
       if (response) {
-        await this.messageService.sendMessage(
-          user.phone_number,
-          response,
-          true
-        );
+        await this.messageService.sendMessage(user.phone_number, response, true);
       }
     }
   }

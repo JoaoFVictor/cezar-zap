@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateMenuTable1697126280461 implements MigrationInterface {
-  name = 'CreateMenuTable1697126280461';
-
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TABLE menus (
@@ -10,7 +8,10 @@ export class CreateMenuTable1697126280461 implements MigrationInterface {
                 option character varying NOT NULL,
                 title character varying NOT NULL,
                 description character varying,
-                action_id integer REFERENCES actions(id)
+                action_id integer REFERENCES actions(id),
+                created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at timestamp NULL
             )
         `);
 

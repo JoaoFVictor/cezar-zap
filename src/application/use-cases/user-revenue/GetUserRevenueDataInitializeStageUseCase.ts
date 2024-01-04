@@ -7,7 +7,7 @@ import { UserTopic } from '../../entities/UserTopic';
 import { injectable } from 'tsyringe';
 
 @injectable()
-export class UserRevenueInitializeStageUseCase {
+export class GetUserRevenueDataInitializeStageUseCase {
   constructor(
     private userRevenueService: UserRevenueService,
     private messageService: MessageService

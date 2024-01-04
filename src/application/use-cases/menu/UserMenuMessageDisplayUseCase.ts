@@ -17,14 +17,8 @@ export class UserMenuMessageDisplayUseCase {
     }
 
     let response = `${userMenuStage.currentMenu.title}\n${userMenuStage.currentMenu.description}\n\n`;
-    userMenuStage.currentMenu.children?.forEach(
-      (option) => (response += `🔹 ${option.option}. ${option.title}\n`)
-    );
+    userMenuStage.currentMenu.children?.forEach((option) => (response += `🔹 ${option.option}. ${option.title}\n`));
 
-    await this.messageService.sendMessage(
-      user.phone_number,
-      response.trim(),
-      true
-    );
+    await this.messageService.sendMessage(user.phone_number, response.trim(), true);
   }
 }

@@ -12,22 +12,14 @@ export class ActionService {
   ) {}
 
   async findById(id: number): Promise<Action | null> {
-    return await this.cacheService.remember(
-      `get_action_by_id_${id}`,
-      CacheTimes.ONE_DAY,
-      async () => {
-        return await this.actionRepository.findById(id);
-      }
-    );
+    return await this.cacheService.remember(`get_action_by_id_${id}`, CacheTimes.ONE_DAY, async () => {
+      return await this.actionRepository.findById(id);
+    });
   }
 
   async findByType(actionType: string): Promise<Action | null> {
-    return await this.cacheService.remember(
-      `get_action_by_type_${actionType}`,
-      CacheTimes.ONE_DAY,
-      async () => {
-        return await this.actionRepository.findByType(actionType);
-      }
-    );
+    return await this.cacheService.remember(`get_action_by_type_${actionType}`, CacheTimes.ONE_DAY, async () => {
+      return await this.actionRepository.findByType(actionType);
+    });
   }
 }

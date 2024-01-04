@@ -17,17 +17,9 @@ export class UserTopicMessageDisplayUseCase {
 
     const response =
       userTopicStage.userTopicStack.length === 0
-        ? userTopicStage.topLevelUserTopics
-            .map((topic) => `${topic.option} - ${topic.title}`)
-            .join('\n')
-        : `${userTopicStage.currentUserTopic!.title}\n${
-            userTopicStage.currentUserTopic!.description
-          }\n\n` +
-          userTopicStage
-            .currentUserTopic!.children?.map(
-              (child) => `- ${child.option}. ${child.title}`
-            )
-            .join('\n');
+        ? userTopicStage.topLevelUserTopics.map((topic) => `${topic.option} - ${topic.title}`).join('\n')
+        : `${userTopicStage.currentUserTopic!.title}\n${userTopicStage.currentUserTopic!.description}\n\n` +
+          userTopicStage.currentUserTopic!.children?.map((child) => `- ${child.option}. ${child.title}`).join('\n');
 
     await this.messageService.sendMessage(
       user.phone_number,

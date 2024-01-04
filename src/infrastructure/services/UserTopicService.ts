@@ -14,25 +14,15 @@ export class UserTopicService {
   ) {}
 
   async createUserTopic(userTopic: UserTopic): Promise<UserTopic | null> {
-    const newUserTopic =
-      await this.userTopicRepository.createUserTopic(userTopic);
-    await this.cacheService.forget(
-      `get_main_user_topics_by_user_${userTopic.user?.id}`
-    );
+    const newUserTopic = await this.userTopicRepository.createUserTopic(userTopic);
+    await this.cacheService.forget(`get_main_user_topics_by_user_${userTopic.user?.id}`);
     return newUserTopic;
   }
 
   async updateUserTopic(userTopic: UserTopic): Promise<UserTopic | null> {
-    const userTopicUpdated =
-      await this.userTopicRepository.updateUserTopic(userTopic);
-    await this.cacheService.put(
-      `get_user_topic_by_id_${userTopic.id}`,
-      userTopicUpdated,
-      CacheTimes.ONE_DAY
-    );
-    await this.cacheService.forget(
-      `get_main_user_topics_by_user_${userTopic.user?.id}`
-    );
+    const userTopicUpdated = await this.userTopicRepository.updateUserTopic(userTopic);
+    await this.cacheService.put(`get_user_topic_by_id_${userTopic.id}`, userTopicUpdated, CacheTimes.ONE_DAY);
+    await this.cacheService.forget(`get_main_user_topics_by_user_${userTopic.user?.id}`);
 
     return userTopicUpdated;
   }
@@ -43,36 +33,22 @@ export class UserTopicService {
     // });
   }
 
-  async findTopLevelTopicByOption(
-    user: User,
-    option: string
-  ): Promise<UserTopic | null> {
+  async findTopLevelTopicByOption(user: User, option: string): Promise<UserTopic | null> {
     return await this.cacheService.remember(
       `find_top_level_topic_by_option_${option}_and_user_id_${user.id}`,
       CacheTimes.ONE_DAY,
       async () => {
-        return await this.userTopicRepository.findTopLevelTopicByOption(
-          user,
-          option
-        );
+        return await this.userTopicRepository.findTopLevelTopicByOption(user, option);
       }
     );
   }
 
-  async findChildTopicByOption(
-    user: User,
-    parentTopic: UserTopic,
-    option: string
-  ): Promise<UserTopic | null> {
+  async findChildTopicByOption(user: User, parentTopic: UserTopic, option: string): Promise<UserTopic | null> {
     return await this.cacheService.remember(
       `find_child_topic_by_option_${option}_and_parent_topic_${parentTopic.id}_user_id_${user.id}`,
       CacheTimes.ONE_DAY,
       async () => {
-        return await this.userTopicRepository.findChildTopicByOption(
-          user,
-          parentTopic,
-          option
-        );
+        return await this.userTopicRepository.findChildTopicByOption(user, parentTopic, option);
       }
     );
   }
@@ -97,55 +73,29 @@ export class UserTopicService {
       userTopicStack: UserTopic[];
     }
   ): Promise<void> {
-    await this.cacheService.put(
-      `get_user_topic_stage_by_user_id_${user.id}`,
-      state,
-      CacheTimes.THIRTY_MINUTES
-    );
+    await this.cacheService.put(`get_user_topic_stage_by_user_id_${user.id}`, state, CacheTimes.THIRTY_MINUTES);
   }
 
   async getUserTopicState(user: User): Promise<number> {
-    return await this.cacheService.remember(
-      `user_${user.id}_topic_state`,
-      CacheTimes.ONE_DAY,
-      async () => {
-        return UserTopicState.DEFAULT;
-      }
-    );
+    return await this.cacheService.remember(`user_${user.id}_topic_state`, CacheTimes.ONE_DAY, async () => {
+      return UserTopicState.DEFAULT;
+    });
   }
 
-  async setUserTopicState(
-    user: User,
-    userTopicState: UserTopicState
-  ): Promise<void> {
-    await this.cacheService.put(
-      `user_${user.id}_topic_state`,
-      userTopicState,
-      CacheTimes.THIRTY_MINUTES
-    );
+  async setUserTopicState(user: User, userTopicState: UserTopicState): Promise<void> {
+    await this.cacheService.put(`user_${user.id}_topic_state`, userTopicState, CacheTimes.THIRTY_MINUTES);
   }
 
   async setTemporaryUserTopic(user: User, userTopic: UserTopic): Promise<void> {
-    await this.cacheService.put(
-      `temporary_user_topic_for_user_${user.id}`,
-      userTopic,
-      CacheTimes.THIRTY_MINUTES
-    );
+    await this.cacheService.put(`temporary_user_topic_for_user_${user.id}`, userTopic, CacheTimes.THIRTY_MINUTES);
   }
 
   async getTemporaryUserTopic(user: User): Promise<UserTopic | null> {
-    return await await this.cacheService.get(
-      `temporary_user_topic_for_user_${user.id}`
-    );
+    return await await this.cacheService.get(`temporary_user_topic_for_user_${user.id}`);
   }
 
-  async finalizeTopicCreation(
-    user: User,
-    description: string
-  ): Promise<UserTopic> {
-    const temporaryUserTopic = await this.cacheService.get<UserTopic>(
-      `temporary_user_topic_for_user_${user.id}`
-    );
+  async finalizeTopicCreation(user: User, description: string): Promise<UserTopic> {
+    const temporaryUserTopic = await this.cacheService.get<UserTopic>(`temporary_user_topic_for_user_${user.id}`);
     if (!temporaryUserTopic) {
       throw new Error('Temporary user topic not found.');
     }

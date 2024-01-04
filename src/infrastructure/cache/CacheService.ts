@@ -31,11 +31,7 @@ export class CacheService {
     await this.redis.flushdb();
   }
 
-  async remember<T>(
-    key: string,
-    seconds: number,
-    fallback: () => Promise<T>
-  ): Promise<T> {
+  async remember<T>(key: string, seconds: number, fallback: () => Promise<T>): Promise<T> {
     const cachedValue = await this.get<T>(key);
 
     if (cachedValue !== null) {

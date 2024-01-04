@@ -7,7 +7,7 @@ import { User } from '../../entities/User';
 import { UserRevenueInitializeStageUseCase } from '../user-revenue/UserRevenueInitializeStageUseCase';
 
 @injectable()
-export class UserRevenueInitAction extends Action {
+export class GetUserRevenueDataInitAction extends Action {
   private userRevenueInitializeStageUseCase: UserRevenueInitializeStageUseCase;
 
   constructor(description: string, action_type?: string, cacheService?: CacheService | null) {
@@ -16,7 +16,7 @@ export class UserRevenueInitAction extends Action {
   }
 
   async execute(user: User): Promise<string | void> {
-    await this.cacheService?.put(`user_${user.id}_id_in_revenue`, true, CacheTimes.ONE_DAY);
+    await this.cacheService?.put(`user_${user.id}_id_in_get_revenue_data`, true, CacheTimes.ONE_DAY);
     await this.userRevenueInitializeStageUseCase.execute(user);
   }
 }

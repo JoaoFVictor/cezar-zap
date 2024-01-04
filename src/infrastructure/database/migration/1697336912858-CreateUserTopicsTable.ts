@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUserTopicsTable1697336912858 implements MigrationInterface {
-  name = 'CreateUserTopicsTable1697336912858';
-
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TABLE user_topics (
@@ -11,7 +9,10 @@ export class CreateUserTopicsTable1697336912858 implements MigrationInterface {
                 option character varying NOT NULL,
                 description character varying,
                 action_id integer REFERENCES actions(id),
-                user_id integer REFERENCES users(id)
+                user_id integer REFERENCES users(id),
+                created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at timestamp NULL
             )
         `);
 

@@ -18,9 +18,7 @@ export class RefreshTokenUseCase {
       }
 
       const newToken = this.tokenService.generateToken(decoded);
-      const user = await this.userService.findByPhoneNumber(
-        decoded.phoneNumber
-      );
+      const user = await this.userService.findByPhoneNumber(decoded.phoneNumber);
       if (user) {
         user.token = newToken;
         await this.userService.updateUser(user);

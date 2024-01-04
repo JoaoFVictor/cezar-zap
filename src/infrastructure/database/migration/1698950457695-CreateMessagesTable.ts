@@ -7,7 +7,10 @@ export class CreateMessagesTable1698950457695 implements MigrationInterface {
                 id serial PRIMARY KEY,
                 phone_number character varying NOT NULL,
                 user_id integer REFERENCES users(id),
-                content character varying NOT NULL
+                content character varying NOT NULL,
+                created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at timestamp NULL
             )
         `);
   }

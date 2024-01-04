@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUsersTable1697080296534 implements MigrationInterface {
-  name = 'CreateUsersTable1697080296534';
-
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TABLE users (
@@ -10,7 +8,10 @@ export class CreateUsersTable1697080296534 implements MigrationInterface {
                 phone_number character varying NOT NULL,
                 is_authenticated boolean NOT NULL DEFAULT false,
                 token character varying,
-                otp character varying
+                otp character varying,
+                created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at timestamp NULL
             )
         `);
   }
