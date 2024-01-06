@@ -16,7 +16,7 @@ import { container } from 'tsyringe';
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT!),
     });
-    await redis.flushall();
+
     const client = new Client({
       puppeteer: {
         args: ['--no-sandbox'],
