@@ -41,7 +41,7 @@ To get a local copy up and running follow these simple steps:
    ```
 6. Install dependency to repository:
    ```
-   docker exec cezar-zap npm install
+   docker exec cezarzap-bot npm install
    ```
 7. Run database migrations:
    ```
@@ -49,7 +49,7 @@ To get a local copy up and running follow these simple steps:
    ```
 8. Execute the project:
    ```
-   docker exec cezar-zap start
+   docker exec cezarzap-bot start
    ```
 
 ## Built With
